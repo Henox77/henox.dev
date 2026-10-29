@@ -1,0 +1,2 @@
+/*! henox.dev © 2026 Henox (https://henox.dev/) */
+import{yt as e}from"./index-CZABwr9b.js";var t=e();function n(){return(0,t.jsxs)(`div`,{className:`illusion-art`,children:[(0,t.jsx)(`span`,{className:`illusion-spin`}),(0,t.jsx)(`span`,{className:`illusion-rings`})]})}export{n as default};

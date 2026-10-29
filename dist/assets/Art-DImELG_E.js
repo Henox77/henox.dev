@@ -1,0 +1,2 @@
+/*! henox.dev © 2026 Henox (https://henox.dev/) */
+import{yt as e}from"./index-CZABwr9b.js";import{t}from"./ArtSvg-D5YWhQC_.js";var n=e();function r(){return(0,n.jsxs)(t,{children:[(0,n.jsx)(`rect`,{className:`gift-fill`,x:`22`,y:`58`,width:`76`,height:`50`,rx:`6`}),(0,n.jsx)(`path`,{d:`M60 58 V108`}),(0,n.jsxs)(`g`,{className:`gift-lid`,children:[(0,n.jsx)(`rect`,{className:`gift-fill`,x:`16`,y:`42`,width:`88`,height:`18`,rx:`5`}),(0,n.jsx)(`path`,{d:`M60 42 C50 22 32 28 42 40 C48 46 58 44 60 42 C62 44 72 46 78 40 C88 28 70 22 60 42 Z`})]})]})}export{r as default};

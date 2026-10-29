@@ -1,0 +1,2 @@
+/*! henox.dev © 2026 Henox (https://henox.dev/) */
+import{yt as e}from"./index-CZABwr9b.js";var t=e(),n=Array.from({length:38},(e,t)=>({h:.22+.78*Math.abs(Math.sin(t*1.7)*Math.cos(t*.6)),d:.9+t%5*.16,delay:-(t%9*.13)}));function r(){return(0,t.jsx)(`div`,{className:`wave-art`,children:n.map((e,n)=>(0,t.jsx)(`span`,{className:`wave-bar`,style:{"--h":e.h,"--d":`${e.d}s`,animationDelay:`${e.delay}s`}},n))})}export{r as default};

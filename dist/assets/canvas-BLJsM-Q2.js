@@ -1,0 +1,2 @@
+/*! henox.dev © 2026 Henox (https://henox.dev/) */
+import{lt as e}from"./index-CZABwr9b.js";function t(t,n,r,i,a=e()){return t.width=r*a,t.height=i*a,n.setTransform(a,0,0,a,0,0),a}var n={"--bg":`#0a0c10`,"--panel":`#10141b`,"--line":`#1d232c`,"--text":`#dce1e8`,"--text-dim":`#8a93a3`,"--amber":`#ffc857`,"--green":`#7ee081`},r=(e,t,r=n[t])=>e.getPropertyValue(t).trim()||r;export{t as n,r as t};

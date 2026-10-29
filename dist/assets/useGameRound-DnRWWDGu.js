@@ -1,0 +1,2 @@
+/*! henox.dev © 2026 Henox (https://henox.dev/) */
+import{r as e}from"./rolldown-runtime-XKyaHtl9.js";import{t}from"./react-BZk3575t.js";import{t as n}from"./useBest-BldQGBIl.js";var r=e(t(),1);function i(e,t){let[i,a]=(0,r.useState)(`idle`),[o,s]=(0,r.useState)(0),{best:c,newBest:l,record:u,clearNew:d}=n(e,t);return{status:i,round:o,best:c,newBest:l,begin:(0,r.useCallback)(()=>{d(),a(`playing`),s(e=>e+1)},[d]),finish:(0,r.useCallback)(e=>{u(e),a(`over`)},[u])}}export{i as t};

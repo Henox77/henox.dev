@@ -1,0 +1,72 @@
+<!doctype html>
+
+<html lang="en" data-theme="dark" data-skin="henox">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Henox — Full-Stack Developer</title>
+    <meta name="author" content="Henox" />
+    <meta name="copyright" content="© 2026 Henox" />
+    <meta name="description" content="Henox's portfolio: a full-stack developer crafting clean code, modern web apps and retro terminal experiences." />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Henox — Full-Stack Developer" />
+    <meta property="og:description" content="Henox's portfolio: a full-stack developer crafting clean code, modern web apps and retro terminal experiences." />
+    <meta property="og:url" content="https://henox.dev/" />
+    <meta property="og:site_name" content="henox.dev" />
+    <meta property="og:image" content="https://henox.dev/og.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content="https://henox.dev/og.png" />
+    <meta name="theme-color" content="#0a0c10" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/henox.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&amp;family=Inter:wght@400;500&amp;family=Silkscreen:wght@400;700&amp;family=VT323&amp;family=Share+Tech+Mono&amp;family=Special+Elite&amp;family=Fira+Code:wght@400;500;700&amp;family=IBM+Plex+Mono:wght@400;500;700&amp;display=swap"
+      rel="stylesheet"
+      media="print"
+      onload="this.media='all'"
+    />
+    <noscript>
+      <link
+        href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&amp;family=Inter:wght@400;500&amp;family=Silkscreen:wght@400;700&amp;family=VT323&amp;family=Share+Tech+Mono&amp;family=Special+Elite&amp;family=Fira+Code:wght@400;500;700&amp;family=IBM+Plex+Mono:wght@400;500;700&amp;display=swap"
+        rel="stylesheet"
+      />
+    </noscript>
+    <script>
+      (function () {
+        var saved = null,
+          skin = null,
+          eff = null;
+        try {
+          saved = localStorage.getItem('henox-theme');
+          skin = localStorage.getItem('henox-skin');
+          eff = localStorage.getItem('henox-skin-eff');
+        } catch (e) {}
+        var ids = 'henox,dracula,monokai,nord,gruvbox,solarized,catppuccin,tokyo-night,crt,crt-amber,gameboy,cyberpunk,blueprint,paper,retro-os,matrix,vaporwave'.split(',');
+        var locks = 'dracula:dark,monokai:dark,crt:dark,crt-amber:dark,gameboy:light,cyberpunk:dark,blueprint:dark,paper:light,retro-os:light,matrix:dark,vaporwave:dark'.split(',');
+        if (skin === 'auto') skin = eff;
+        if (ids.indexOf(skin) < 0) skin = 'henox';
+        var theme = saved === 'light' ? 'light' : 'dark';
+        for (var i = 0; i < locks.length; i++) {
+          var p = locks[i].split(':');
+          if (p[0] === skin) theme = p[1];
+        }
+        document.documentElement.dataset.skin = skin;
+        document.documentElement.dataset.theme = theme;
+      })();
+    </script>
+    <script type="module" crossorigin src="/assets/index-CZABwr9b.js"></script>
+    <link rel="modulepreload" crossorigin href="/assets/rolldown-runtime-XKyaHtl9.js">
+    <link rel="modulepreload" crossorigin href="/assets/react-BZk3575t.js">
+    <link rel="modulepreload" crossorigin href="/assets/site-T3RqjfmJ.js">
+    <link rel="modulepreload" crossorigin href="/assets/nap-Beyb25x_.js">
+    <link rel="stylesheet" crossorigin href="/assets/index-Cv3OLtf3.css">
+  </head>
+  <body>
+    <div id="root"></div>
+  </body>
+</html>

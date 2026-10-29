@@ -1,0 +1,2 @@
+/*! henox.dev © 2026 Henox (https://henox.dev/) */
+import{yt as e}from"./index-CZABwr9b.js";var t=e();function n({show:e}){return e?(0,t.jsxs)(`span`,{className:`pet-zzz`,"aria-hidden":`true`,children:[(0,t.jsx)(`i`,{children:`z`}),(0,t.jsx)(`i`,{children:`z`}),(0,t.jsx)(`i`,{children:`Z`})]}):null}export{n as t};

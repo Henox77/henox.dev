@@ -1,0 +1,2 @@
+/*! henox.dev © 2026 Henox (https://henox.dev/) */
+import{yt as e}from"./index-CZABwr9b.js";import{t}from"./ArtSvg-D5YWhQC_.js";var n=e();function r(){return(0,n.jsxs)(t,{viewBox:`0 0 120 100`,width:104,height:87,children:[(0,n.jsx)(`path`,{className:`grad-fill`,d:`M60 16 L112 38 L60 60 L8 38 Z`}),(0,n.jsx)(`path`,{d:`M28 50 V72 C28 82 92 82 92 72 V50`}),(0,n.jsxs)(`g`,{className:`grad-tassel`,children:[(0,n.jsx)(`path`,{d:`M104 41 V70`}),(0,n.jsx)(`rect`,{className:`grad-fill`,x:`100`,y:`70`,width:`8`,height:`12`,rx:`2`})]})]})}export{r as default};

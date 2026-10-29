@@ -1,0 +1,2 @@
+/*! henox.dev © 2026 Henox (https://henox.dev/) */
+import{yt as e}from"./index-CZABwr9b.js";var t=e();function n({viewBox:e=`0 0 120 120`,width:n=96,height:r=96,children:i}){return(0,t.jsx)(`div`,{className:`art-center`,children:(0,t.jsx)(`svg`,{viewBox:e,width:n,height:r,fill:`none`,stroke:`currentColor`,strokeWidth:`2.5`,strokeLinejoin:`round`,strokeLinecap:`round`,children:i})})}export{n as t};
