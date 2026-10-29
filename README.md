@@ -34,7 +34,6 @@ Bu depo, **[henox.dev](https://henox.dev/)** üzerinde yayında olan kişisel ya
 - **Frontend:** React, Vite, Tailwind CSS, JavaScript (ESNext)
 - **Animasyon & Fizik:** Matter.js
 - **Veri:** GitHub REST API
-- **Yayın:** Netlify
 
 ### 💻 Yerel Geliştirme (Local Setup)
 
@@ -66,7 +65,6 @@ This repository contains the source code for my personal developer portfolio, li
 - **Frontend:** React, Vite, Tailwind CSS, JavaScript (ESNext)
 - **Physics:** Matter.js
 - **Data:** GitHub REST API
-- **Deployment:** Netlify
 
 ---
 
@@ -74,4 +72,3 @@ This repository contains the source code for my personal developer portfolio, li
 
 - **Website:** [https://henox.dev/](https://henox.dev/)
 - **GitHub:** [@Henox77](https://github.com/Henox77)
-- **Email:** [contact@henox.dev](mailto:contact@henox.dev)

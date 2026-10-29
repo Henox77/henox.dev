@@ -14,8 +14,6 @@ export const site = {
   locationEn: 'Istanbul',
   country: 'TR',
   host: 'henox-box',
-  email: 'contact@henox.dev',
-  phone: '905000000000',
 
   timezone: 'Europe/Istanbul',
   schedule: { dawn: 6, day: 9, dusk: 18, night: 24 },

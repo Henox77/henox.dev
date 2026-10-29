@@ -84,7 +84,7 @@ export const DICTIONARY = {
       ],
       help: `help | ls | cat <dosya> | cd <sayfa> | whoami | date | battery | theme | clear`,
       helpHint: `dene: sudo hire ${site.id}, ya da theme list`,
-      hireResp: `Harika! Birlikte çalışmak veya iletişime geçmek için ${site.email} adresine yazabilirsiniz.`,
+      hireResp: 'Harika! Birlikte çalışmak veya iletişime geçmek için GitHub üzerinden ulaşabilirsiniz.',
     },
 
     home: {
@@ -212,7 +212,7 @@ export const DICTIONARY = {
       ],
       help: 'help | ls | cat <file> | cd <tab> | whoami | date | battery | theme | clear',
       helpHint: `try: sudo hire ${site.id}, or theme list`,
-      hireResp: `Awesome! To collaborate or discuss a project, feel free to write to ${site.email}.`,
+      hireResp: 'Awesome! To collaborate or discuss a project, feel free to reach out via GitHub.',
     },
 
     home: {
