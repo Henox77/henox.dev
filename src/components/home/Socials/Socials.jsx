@@ -44,7 +44,7 @@ export default function Socials() {
   return (
     <div className="flex flex-col items-center text-center">
       <p className="font-mono text-[13px] text-dim mb-6">
-        {lang === 'tr' ? 'Beni diğer platformlarda takip et:' : 'Find me across the web:'}
+        {lang === 'tr' ? 'GitHub profilim:' : 'Find me on GitHub:'}
       </p>
       <div className="flex flex-wrap gap-8 justify-center">
         {socials.map((s) => (

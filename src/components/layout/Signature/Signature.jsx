@@ -9,13 +9,11 @@ export function Signature() {
   const [drawn, setDrawn] = useState(false);
   const [open, setOpen] = useState(false);
   const pointer = useRef('mouse');
-  const { dict } = useLang();
 
   useEffect(() => {
     return observeOnce(ref.current, () => setDrawn(true), 0.4);
   }, []);
 
-  const isMouse = (e) => e.pointerType === 'mouse';
   const onClick = () => pointer.current !== 'mouse' && setOpen((o) => !o);
   const onKeyDown = (e) => {
     if (e.key === 'Enter' || e.key === ' ') {
@@ -72,12 +70,6 @@ export function Signature() {
             </div>
             <span className="font-mono text-[13px] text-dim tracking-[0.14em]">{site.handle}</span>
           </div>
-          <span
-            className="sig-bottom absolute left-1/2 -translate-x-1/2 bottom-3.5 font-mono text-[9px] uppercase bg-panel px-1.5 whitespace-nowrap"
-            style={{ color: 'var(--amber)' }}
-          >
-            {dict.footer.handcrafted}
-          </span>
         </div>
       </div>
     </section>

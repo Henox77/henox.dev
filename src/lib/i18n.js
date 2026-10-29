@@ -142,8 +142,7 @@ export const DICTIONARY = {
     },
 
     footer: {
-      handcrafted: 'modern & minimalist portfolyo',
-      copy: `${site.locationTr}'da geliştirildi · © ${site.year} ${site.id}`,
+      copy: `© ${site.year} ${site.handle}`,
     },
   },
   en: {
@@ -271,8 +270,7 @@ export const DICTIONARY = {
     },
 
     footer: {
-      handcrafted: 'modern & minimalist portfolio',
-      copy: `crafted with care in ${site.locationEn} · © ${site.year} ${site.id}`,
+      copy: `© ${site.year} ${site.handle}`,
     },
   },
 };
