@@ -1,5 +1,6 @@
 import './Socials.css';
 import { socials } from '../../../data/socials.js';
+import { useLang } from '../../../context/LangContext.jsx';
 
 function SocialButton({ name, href, brand, viewBox, path, zalo }) {
   return (
@@ -39,10 +40,13 @@ function SocialButton({ name, href, brand, viewBox, path, zalo }) {
 }
 
 export default function Socials() {
+  const { lang } = useLang();
   return (
-    <div>
-      <p className="font-mono text-[12.5px] text-dim mb-5">or find me elsewhere</p>
-      <div className="flex flex-wrap gap-x-2 gap-y-6">
+    <div className="flex flex-col items-center text-center">
+      <p className="font-mono text-[13px] text-dim mb-6">
+        {lang === 'tr' ? 'Beni diğer platformlarda takip et:' : 'Find me across the web:'}
+      </p>
+      <div className="flex flex-wrap gap-8 justify-center">
         {socials.map((s) => (
           <SocialButton key={s.name} {...s} />
         ))}
