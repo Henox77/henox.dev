@@ -1,3 +1,4 @@
+import { useLang } from '../../../context/LangContext.jsx';
 import { Suspense, useEffect, useRef, useState } from 'react';
 import ErrorBoundary from '../../layout/ErrorBoundary.jsx';
 import SectionHead from '../../ui/SectionHead.jsx';
@@ -24,6 +25,7 @@ const btn = 'lab-btn px-3.5 py-1.5 rounded-md border border-line text-ink font-m
 const Link = ({ slug, ...props }) => <PageLink view={slug ? `lab/${slug}` : 'lab'} {...props} />;
 
 function LabGrid({ f, setF, onNavigate }) {
+  const { lang } = useLang();
   const filterRef = useRef(null);
   const dense = LAB_ITEMS.length > DENSE_MIN;
   const s = f.q.trim().toLowerCase();
@@ -78,7 +80,7 @@ function LabGrid({ f, setF, onNavigate }) {
           </label>
         )}
         <button type="button" onClick={random} className={`${btn} ml-auto`}>
-          random <span className="lab-btn-ico lab-btn-ico--zap" aria-hidden="true">↯</span>
+          {lang === 'tr' ? 'rastgele' : 'random'} <span className="lab-btn-ico lab-btn-ico--zap" aria-hidden="true">↯</span>
         </button>
       </div>
 
@@ -103,7 +105,7 @@ function LabGrid({ f, setF, onNavigate }) {
             <div className="font-mono font-bold text-[14px] text-ink group-hover:text-amber">{i.name}</div>
             <div className="font-mono text-[12px] text-dim mb-2">{i.file}</div>
             <p className={`text-[13px] text-dim leading-snug pr-10 ${dense ? 'line-clamp-2' : ''}`}>{touchText(i.blurb)}</p>
-            <span className="lab-card-go" aria-hidden="true">run ›</span>
+            <span className="lab-card-go" aria-hidden="true">{lang === 'tr' ? 'başlat ›' : 'run ›'}</span>
           </Link>
         ))}
       </div>
@@ -118,7 +120,7 @@ function LabGrid({ f, setF, onNavigate }) {
       )}
       {shown.length < items.length && (
         <button type="button" className="lab-more" onClick={() => setF((prev) => ({ ...prev, limit: prev.limit + PAGE }))}>
-          + {items.length - shown.length} more
+          + {items.length - shown.length} {lang === 'tr' ? 'daha' : 'more'}
         </button>
       )}
     </div>
@@ -202,6 +204,7 @@ function JumpScroll({ children, onKeyDown }) {
 }
 
 function LabJump({ item, onNavigate }) {
+  const { lang } = useLang();
   const [open, setOpen] = useState(false);
   const [q, setQ] = useState('');
   const boxRef = useRef(null);
@@ -267,7 +270,7 @@ function LabJump({ item, onNavigate }) {
   return (
     <div ref={boxRef} className="lab-jump" onKeyDown={arrows}>
       <button ref={btnRef} type="button" className={btn} aria-expanded={open} aria-controls="lab-jump-panel" onClick={() => setOpen((o) => !o)}>
-        jump to… <span className="lab-btn-ico" aria-hidden="true">▾</span>
+        {lang === 'tr' ? 'hızlı geçiş…' : 'jump to…'} <span className="lab-btn-ico" aria-hidden="true">▾</span>
       </button>
       {open && (
         <div id="lab-jump-panel" className="lab-jump-panel">
@@ -327,6 +330,7 @@ function LabJump({ item, onNavigate }) {
 }
 
 function LabItem({ item, onNavigate }) {
+  const { lang } = useLang();
   const idx = LAB_ITEMS.indexOf(item);
   const prev = LAB_ITEMS[(idx - 1 + LAB_ITEMS.length) % LAB_ITEMS.length];
   const next = LAB_ITEMS[(idx + 1) % LAB_ITEMS.length];
@@ -341,13 +345,13 @@ function LabItem({ item, onNavigate }) {
     <>
       <nav aria-label="Lab" className="flex flex-wrap items-center gap-2 -mt-6 mb-4 font-mono text-[13px]">
         <Link slug={null} onNavigate={onNavigate} className={btn}>
-          <span className="lab-btn-ico lab-btn-ico--l" aria-hidden="true">←</span> all
+          <span className="lab-btn-ico lab-btn-ico--l" aria-hidden="true">←</span> {lang === 'tr' ? 'tümü' : 'all'}
         </Link>
         <Link slug={prev.slug} onNavigate={onNavigate} className={btn} rel="prev" title={prev.file}>
-          <span className="lab-btn-ico lab-btn-ico--l" aria-hidden="true">‹</span> prev
+          <span className="lab-btn-ico lab-btn-ico--l" aria-hidden="true">‹</span> {lang === 'tr' ? 'önceki' : 'prev'}
         </Link>
         <Link slug={next.slug} onNavigate={onNavigate} className={btn} rel="next" title={next.file}>
-          next <span className="lab-btn-ico lab-btn-ico--r" aria-hidden="true">›</span>
+          {lang === 'tr' ? 'sonraki' : 'next'} <span className="lab-btn-ico lab-btn-ico--r" aria-hidden="true">›</span>
         </Link>
         <button type="button" onClick={random} className={btn}>
           random <span className="lab-btn-ico lab-btn-ico--zap" aria-hidden="true">↯</span>

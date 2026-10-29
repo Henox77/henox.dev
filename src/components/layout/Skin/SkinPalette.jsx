@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import { AUTO_BY_TOD, GROUP_LABEL, SKINS, SKIN_AUTO, skinById, swatchOf } from '../../../config/skins.js';
 import { chooseSkin, endPreview, isUnlocked, previewSkin } from '../../../lib/skin.js';
 import useSkin from '../../../lib/useSkin.js';
+import { useLang } from '../../../context/LangContext.jsx';
 import './Skin.css';
 
 const PREVIEW_DELAY_MS = 70;
@@ -12,6 +13,7 @@ const isLocked = (it) => Boolean(it.unlock) && !isUnlocked(it.id);
 
 export default function SkinPalette({ open, onClose }) {
   const { choice, theme } = useSkin();
+  const { lang } = useLang();
   const [query, setQuery] = useState('');
   const [idx, setIdx] = useState(0);
   const inputRef = useRef(null);
@@ -110,7 +112,7 @@ export default function SkinPalette({ open, onClose }) {
               setQuery(e.target.value);
               setIdx(0);
             }}
-            placeholder="search skins…"
+            placeholder={lang === 'tr' ? 'tema ara…' : 'search skins…'}
             spellCheck={false}
             autoComplete="off"
             role="combobox"
@@ -131,7 +133,7 @@ export default function SkinPalette({ open, onClose }) {
           aria-label="Skins"
           className="skin-pal-list scroll-amber"
         >
-          {items.length === 0 && <div className="skin-pal-empty">no skin matches “{query}”</div>}
+          {items.length === 0 && <div className="skin-pal-empty">{lang === 'tr' ? `“${query}” ile eşleşen tema yok` : `no skin matches “${query}”`}</div>}
           {items.map((it, i) => {
             const showHead = !query && it.group !== lastGroup;
             lastGroup = it.group;
@@ -161,7 +163,7 @@ export default function SkinPalette({ open, onClose }) {
                     <span className="skin-row-name">{it.label}</span>
                     <span className="skin-row-note">{locked ? `locked · ${it.unlock.hint}` : it.note}</span>
                   </span>
-                  <span className="skin-row-tag">{choice === it.id ? '● current' : locked ? '' : modeTag(it)}</span>
+                  <span className="skin-row-tag">{choice === it.id ? (lang === 'tr' ? '● geçerli' : '● current') : locked ? '' : modeTag(it)}</span>
                 </div>
               </div>
             );

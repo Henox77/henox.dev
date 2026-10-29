@@ -5,40 +5,71 @@ import { sessionGet, sessionSet } from '../../../../lib/storage.js';
 import { pausableInterval } from '../../../../lib/timers.js';
 import useTimer from '../../../../lib/useTimer.js';
 import useScrollFx from '../shared/useScrollFx.js';
+import { useLang } from '../../../../context/LangContext.jsx';
 import './Clippy.css';
 
 const KEY_HIDE = storageKey('clippy-hidden');
 const KEY_HELLO = storageKey('clippy-hello');
 
 const TIPS = {
-  home: [
-    'Pro tip: grab a letter in the big headline and throw it. I tried once. It hurt.',
-    'The torch up in the corner switches light and dark. Yes, really. Click it.',
-    'Henox says "introvert by default". I say: click the contact button anyway.',
-  ],
-  about: [
-    'This is the about page. I would summarise it, but I am only a paperclip.',
-    'Looks like you are reading a life story. Would you like me to make it longer?',
-  ],
-  projects: [
-    'It looks like you are browsing projects. Would you like help? ...No? Great, I am excellent at that.',
-    'Every card here is a real thing Henox built. I have only ever built a loop.',
-  ],
-  lab: [
-    'The lab is where the experiments live. Some of them move on their own. Do not make eye contact.',
-    'There is a snake game in the lab. I am a snake, but bent in fewer places.',
-  ],
-  any: [
-    'Did you know? Pressing Ctrl+K opens the skin picker. Windows 95 never had that.',
-    'You have excellent taste in operating systems.',
-    'I see you are using a website. Would you like help using a website?',
-  ],
+  tr: {
+    home: [
+      'İpucu: Büyük başlıktaki bir harfi tutup fırlatabilirsin. Bir kere denedim, acıttı.',
+      'Köşedeki meşale açık/koyu modu değiştirir. Tıklayıp deneyebilirsin.',
+      'Henox odaklanmış modda. Yine de yeni projeler için iletişime geçebilirsin.',
+    ],
+    about: [
+      'Burası hakkımda sayfası. Özetlerdim ama sadece bir ataşım.',
+      'Geliştirici geçmişi ve teknoloji yığını burada listeleniyor.',
+    ],
+    projects: [
+      'Projelere göz atıyorsun. Tüm repolar GitHub üzerinden canlı çekiliyor.',
+      'Buradaki projeler Henox tarafından geliştirilmiş gerçek açık kaynak depolardır.',
+    ],
+    lab: [
+      'Laboratuvar deneysel çalışmaların olduğu yerdir. Bazı parçalar kendi kendine hareket eder.',
+      'Laboratuvarda bir yılan oyunu bile var.',
+    ],
+    any: [
+      'Biliyor muydun? Ctrl+K tuşlarına basarak tema seçiciyi açabilirsin.',
+      'Harika bir işletim sistemi zevkin var.',
+      'Sitede gezindiğini görüyorum. Projeleri kurcalamaktan çekinme!',
+    ],
+  },
+  en: {
+    home: [
+      'Pro tip: grab a letter in the big headline and throw it. I tried once. It hurt.',
+      'The torch up in the corner switches light and dark. Yes, really. Click it.',
+      'Henox is focused by default. Say hi anyway for projects.',
+    ],
+    about: [
+      'This is the about page. I would summarise it, but I am only a paperclip.',
+      'Looks like you are reading a developer journey. Keep exploring!',
+    ],
+    projects: [
+      'Browsing projects? All cards are dynamically fetched via GitHub API.',
+      'Every card here is an open source project built by Henox.',
+    ],
+    lab: [
+      'The lab is where the experiments live. Some of them move on their own.',
+      'There is a snake game in the lab. I am a snake, but bent in fewer places.',
+    ],
+    any: [
+      'Did you know? Pressing Ctrl+K opens the skin picker.',
+      'You have excellent taste in themes.',
+      'Feel free to poke around and explore the projects!',
+    ],
+  },
 };
-const pageOf = (view) => (String(view).startsWith('lab') ? 'lab' : TIPS[view] ? view : 'home');
+const pageOf = (view, lang = 'tr') => {
+  const dict = TIPS[lang] || TIPS.en;
+  return String(view).startsWith('lab') ? 'lab' : dict[view] ? view : 'home';
+};
 
 const WIRE = 'M36 38V66.25A11.75 11.75 0 0 1 12.5 66.25V11.75A8.75 8.75 0 0 1 30 11.75V56.25A5.75 5.75 0 0 1 18.5 56.25V36';
 
 export default function Clippy({ view, onNavigate }) {
+  const { lang } = useLang();
   const [gone, setGone] = useState(() => sessionGet(KEY_HIDE) === '1');
   const [msg, setMsg] = useState(null);
   const [blink, setBlink] = useState(false);
@@ -47,14 +78,21 @@ export default function Clippy({ view, onNavigate }) {
   const tipIdx = useRef(0);
   const bubbleTimer = useTimer();
   const viewRef = useRef(view);
+  const langRef = useRef(lang);
+
   useEffect(() => {
     viewRef.current = view;
   }, [view]);
+
+  useEffect(() => {
+    langRef.current = lang;
+  }, [lang]);
 
   const close = useCallback(() => {
     bubbleTimer.clear();
     setMsg(null);
   }, [bubbleTimer]);
+
   const say = useCallback(
     (text, actions = [], ms = 9000) => {
       setMsg({ text, actions });
@@ -64,10 +102,13 @@ export default function Clippy({ view, onNavigate }) {
     },
     [bubbleTimer]
   );
+
   const nextTip = useCallback(() => {
-    const pool = [...TIPS[pageOf(viewRef.current)], ...TIPS.any];
+    const curLang = langRef.current === 'tr' ? 'tr' : 'en';
+    const dict = TIPS[curLang] || TIPS.en;
+    const pool = [...dict[pageOf(viewRef.current, curLang)], ...dict.any];
     const text = pool[tipIdx.current++ % pool.length];
-    say(text, [{ label: 'Got it', run: close }]);
+    say(text, [{ label: curLang === 'tr' ? 'Anladım' : 'Got it', run: close }]);
   }, [say, close]);
 
   const hide = () => {
@@ -80,18 +121,19 @@ export default function Clippy({ view, onNavigate }) {
     if (gone || sessionGet(KEY_HELLO) === '1') return undefined;
     const id = setTimeout(() => {
       sessionSet(KEY_HELLO, '1');
+      const isTr = lang === 'tr';
       say(
-        'It looks like you are visiting a portfolio. Would you like help?',
+        isTr ? 'Bir portfolyo sitesini geziyorsun gibi görünüyor. Yardım ister misin?' : 'It looks like you are visiting a portfolio. Would you like help?',
         [
-          { label: 'Show me the projects', run: () => { close(); onNavigate?.('projects'); } },
-          { label: 'Who is Henox?', run: () => { close(); onNavigate?.('about'); } },
-          { label: 'Hide Clippy', run: hide },
+          { label: isTr ? 'Projeleri göster' : 'Show me the projects', run: () => { close(); onNavigate?.('projects'); } },
+          { label: isTr ? 'Henox kimdir?' : 'Who is Henox?', run: () => { close(); onNavigate?.('about'); } },
+          { label: isTr ? 'Ataşı gizle' : 'Hide Clippy', run: hide },
         ],
         20000
       );
     }, 1600);
     return () => clearTimeout(id);
-  }, [gone]);
+  }, [gone, lang]);
 
   useEffect(() => {
     if (gone) return undefined;
@@ -101,64 +143,51 @@ export default function Clippy({ view, onNavigate }) {
           setBlink(true);
           setTimeout(() => setBlink(false), 160);
         },
-        () => 2800 + Math.random() * 3200,
-        { onResume: () => {} }
+        () => 2800 + Math.random() * 3200
       ),
       pausableInterval(
         () => {
-          if (document.querySelector('.clippy-bubble')) return;
-          nextTip();
+          if (!msg && Math.random() < 0.35) {
+            setWiggle(true);
+            setTimeout(() => setWiggle(false), 600);
+          }
         },
-        () => 60000 + Math.random() * 30000,
-        { onResume: () => {} }
+        () => 9000 + Math.random() * 12000
       ),
     ];
-    return () => stops.forEach((s) => s());
-  }, [gone, nextTip]);
+    return () => stops.forEach((s) => s?.());
+  }, [gone, msg]);
 
   useEffect(() => {
-    if (gone || !hasFinePointer() || prefersReducedMotion()) return undefined;
-    let raf = 0;
-    const move = (e) => {
-      cancelAnimationFrame(raf);
-      raf = requestAnimationFrame(() => {
-        const el = root.current;
-        if (!el) return;
-        const r = el.getBoundingClientRect();
-        const dx = e.clientX - (r.left + r.width / 2);
-        const dy = e.clientY - (r.top + r.height / 3);
-        const d = Math.hypot(dx, dy) || 1;
-        const k = Math.min(1, d / 160) * 1.5;
-        el.style.setProperty('--px', `${((dx / d) * k).toFixed(2)}px`);
-        el.style.setProperty('--py', `${((dy / d) * k).toFixed(2)}px`);
-      });
+    if (gone) return undefined;
+    const el = root.current;
+    if (!el || !hasFinePointer() || prefersReducedMotion()) return undefined;
+    let t = 0;
+    const onMove = (e) => {
+      const now = performance.now();
+      if (now - t < 40) return;
+      t = now;
+      const rect = el.getBoundingClientRect();
+      const cx = rect.left + rect.width / 2;
+      const cy = rect.top + rect.height / 2;
+      const dx = Math.max(-1, Math.min(1, (e.clientX - cx) / 200));
+      const dy = Math.max(-1, Math.min(1, (e.clientY - cy) / 200));
+      el.style.setProperty('--clippy-dx', `${dx * 1.5}px`);
+      el.style.setProperty('--clippy-dy', `${dy * 1.5}px`);
     };
-    window.addEventListener('pointermove', move, { passive: true });
-    return () => {
-      window.removeEventListener('pointermove', move);
-      cancelAnimationFrame(raf);
-    };
+    window.addEventListener('pointermove', onMove, { passive: true });
+    return () => window.removeEventListener('pointermove', onMove);
   }, [gone]);
 
   const atBottom = useRef(false);
   useScrollFx(
-    ({ vel, dir, progress, scrolling }) => {
-      const el = root.current;
-      if (!el) return;
-      const range = Math.max(0, window.innerHeight - 76 - 94 - 56);
-      const ride = (1 - progress) * range;
-      el.style.setProperty('--ride', `${ride.toFixed(0)}px`);
-      el.style.setProperty('--lean', `${Math.max(-12, Math.min(12, vel / 140)).toFixed(1)}deg`);
-      el.classList.toggle('is-top', ride > range * 0.55);
-      if (scrolling && dir) {
-        el.style.setProperty('--py', `${dir * 1.5}px`);
-        el.style.setProperty('--px', '0px');
-      }
-      if (progress > 0.985 && !atBottom.current && !document.querySelector('.clippy-bubble')) {
+    ({ progress }) => {
+      if (progress > 0.96 && !atBottom.current && !msg) {
         atBottom.current = true;
-        say('You have reached the bottom of the page. Would you like to go back up?', [
-          { label: 'Take me up', run: () => { close(); window.scrollTo({ top: 0, behavior: 'smooth' }); } },
-          { label: 'No, I live here now', run: close },
+        const isTr = langRef.current === 'tr';
+        say(isTr ? 'Sayfanın en sonuna ulaştın! Yukarı çıkmak ister misin?' : 'You reached the end! Looking for a way back to the top?', [
+          { label: isTr ? 'Beni yukarı çıkar' : 'Take me up', run: () => { close(); window.scrollTo({ top: 0, behavior: 'smooth' }); } },
+          { label: isTr ? 'Burada iyiyim' : 'No, I live here now', run: close },
         ]);
       } else if (progress < 0.9) atBottom.current = false;
     },
@@ -197,7 +226,7 @@ export default function Clippy({ view, onNavigate }) {
           )}
         </div>
       )}
-      <button type="button" className={`clippy-body ${wiggle ? 'is-wiggle' : ''}`} onClick={nextTip} aria-label="Clippy, the helpful paperclip. Click for a tip" title="Clippy">
+      <button type="button" className={`clippy-body ${wiggle ? 'is-wiggle' : ''}`} onClick={nextTip} aria-label="Clippy" title="Clippy">
         <svg viewBox="0 0 42 81" width="40" height="77" aria-hidden="true">
           <defs>
             <radialGradient id="clippy-rim" cx="0.35" cy="0.3" r="0.8">

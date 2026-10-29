@@ -29,6 +29,14 @@ Bu depo, **[henox.dev](https://henox.dev/)** üzerinde yayında olan kişisel ya
 - **Çift Dil:** Türkçe ve İngilizce desteği.
 - **Tema Desteği:** Farklı retro temalar ve renk paletleri (Ctrl+K).
 
+### ⚙️ Kendinize Göre Özelleştirme
+
+Projeyi kendi adınıza kullanmak isterseniz:
+1. `src/config/site.js` dosyasını açarak adınızı, GitHub kullanıcı adınızı (`githubUser`), unvanınızı ve tanıtım metinlerinizi kendinize göre güncelleyebilirsiniz.
+2. `src/data/profile.js` dosyasından teknoloji yığınınızı (stack) ve geliştirme geçmişinizi düzenleyebilirsiniz.
+
+Projeleriniz GitHub kullanıcı adınıza göre otomatik olarak çekilecek ve listelenecektir.
+
 ### 🛠️ Teknoloji Yığını
 
 - **Frontend:** React, Vite, Tailwind CSS, JavaScript (ESNext)
@@ -59,6 +67,14 @@ This repository contains the source code for my personal developer portfolio, li
 - **Interactive Terminal:** An in-browser terminal emulator supporting bash-like commands (`whoami`, `cat`, `cd`, `theme`, `date`).
 - **Bilingual:** Full Turkish and English language support.
 - **Themes:** Multiple retro skins and color palettes (accessible via Ctrl+K).
+
+### ⚙️ Customization
+
+If you want to use this portfolio for yourself:
+1. Open `src/config/site.js` and edit your name, GitHub handle (`githubUser`), bio, and roles.
+2. Edit `src/data/profile.js` to customize your tech stack and activity timeline.
+
+Your projects will automatically be fetched from your GitHub account.
 
 ### 🛠️ Tech Stack
 

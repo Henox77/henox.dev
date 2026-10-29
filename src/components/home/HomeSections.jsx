@@ -56,7 +56,7 @@ export function FeaturedProjects({ onNavigate }) {
                 <span className="w-2.5 h-2.5 rounded-full bg-green-500/80" />
                 <span className="ml-2 font-mono text-xs text-dim">github.com/{site.githubUser}/{p.name || p.file}</span>
               </div>
-              <span className="text-[11px] font-mono px-2 py-0.5 rounded border border-line text-dim">public</span>
+              <span className="text-[11px] font-mono px-2 py-0.5 rounded border border-line text-dim">{lang === 'tr' ? 'açık kaynak' : 'public'}</span>
             </div>
 
             <div className="py-4 my-auto">
@@ -74,7 +74,7 @@ export function FeaturedProjects({ onNavigate }) {
 
               <div className="mt-4 p-2.5 rounded bg-black/30 border border-line font-mono text-xs text-amber flex items-center justify-between">
                 <code>$ git clone {p.href}.git</code>
-                <span className="text-[11px] text-dim opacity-70 group-hover:opacity-100">open ↗</span>
+                <span className="text-[11px] text-dim opacity-70 group-hover:opacity-100">{lang === 'tr' ? 'aç ↗' : 'open ↗'}</span>
               </div>
             </div>
 

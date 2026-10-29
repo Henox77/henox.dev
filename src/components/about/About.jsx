@@ -82,7 +82,7 @@ function HelloLine({ sleeping, why, lang }) {
         sleptAt.current ||= performance.now();
         setNote('');
         if (cur.current !== 'sleep' && !(await retype('sleep'))) return;
-        setNote(why === 'battery' ? ' zzz... social battery: 0%' : ' zzz...');
+        setNote(why === 'battery' ? (lang === 'tr' ? ' zzz... batarya: 0%' : ' zzz... social battery: 0%') : ' zzz...');
         return;
       }
       if (cur.current !== 'hello') {

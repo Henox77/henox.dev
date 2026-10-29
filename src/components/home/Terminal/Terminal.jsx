@@ -20,18 +20,19 @@ const TABS = PAGES.map((p) => p.id);
 const pad = (s, n) => s + ' '.repeat(Math.max(1, n - s.length));
 const modeNote = (s) => (s.modes.length > 1 ? 'dark+light' : `${s.modes[0]} only`);
 
-function themeCmd(arg) {
+function themeCmd(arg, lang) {
+  const isTr = lang === 'tr';
   const [first = '', ...rest] = arg.trim().toLowerCase().split(/\s+/).filter(Boolean);
   if (!first) {
     const now = getChoice() === SKIN_AUTO ? `auto (${getSkin()})` : getSkin();
-    return [`skin: ${now}`, 'theme list | theme set <name> | theme random | theme auto   (or press Ctrl+K)'];
+    return [`skin: ${now}`, isTr ? 'theme list | theme set <isim> | theme random | theme auto   (veya Ctrl+K)' : 'theme list | theme set <name> | theme random | theme auto   (or press Ctrl+K)'];
   }
   if (first === 'list' || first === 'ls') {
     const cur = getChoice();
-    const rows = [`${cur === SKIN_AUTO ? '*' : ' '} ${pad('auto', 13)}follows the time of day`];
+    const rows = [`${cur === SKIN_AUTO ? '*' : ' '} ${pad('auto', 13)}${isTr ? 'günün saatine göre değişir' : 'follows the time of day'}`];
     for (const s of SKINS) {
       const locked = s.unlock && !isUnlocked(s.id);
-      rows.push(`${cur === s.id ? '*' : ' '} ${pad(s.id, 13)}${locked ? `[locked] ${s.unlock.hint}` : modeNote(s)}}`);
+      rows.push(`${cur === s.id ? '*' : ' '} ${pad(s.id, 13)}${locked ? `[${isTr ? 'kilitli' : 'locked'}] ${s.unlock.hint}` : modeNote(s)}}`);
     }
     return [rows.join('\n')];
   }
@@ -42,17 +43,17 @@ function themeCmd(arg) {
     return [`-> ${s.id}`];
   }
   const target = (first === 'set' || first === 'use' ? rest : [first, ...rest]).join('-');
-  if (!target) return ['theme: set what? try theme list'];
+  if (!target) return [isTr ? 'theme: hangi tema? "theme list" deneyin' : 'theme: set what? try theme list'];
   if (target === SKIN_AUTO) {
     chooseSkin(SKIN_AUTO);
-    return ['-> auto (changes with the time of day)'];
+    return [isTr ? '-> auto (saate göre otomatik değişir)' : '-> auto (changes with the time of day)'];
   }
-  if (!isSkinId(target)) return [`theme: ${target}: no such skin - try theme list`];
+  if (!isSkinId(target)) return [isTr ? `theme: ${target}: böyle bir tema yok - "theme list" deneyin` : `theme: ${target}: no such skin - try theme list`];
   const s = skinById(target);
-  if (!isUnlocked(target)) return [`theme: ${target} is locked - ${s.unlock.hint}`];
+  if (!isUnlocked(target)) return [isTr ? `theme: ${target} kilitli - ${s.unlock.hint}` : `theme: ${target} is locked - ${s.unlock.hint}`];
   chooseSkin(target);
   const lock = lockedMode(target);
-  return [`-> ${target}${lock ? ` (${lock} only: the torch switch is locked)` : ''}}`];
+  return [`-> ${target}${lock ? ` (${lock} only)` : ''}`];
 }
 
 function execCmd(raw, { onNavigate, clear, lang, dict }) {
@@ -96,19 +97,19 @@ function execCmd(raw, { onNavigate, clear, lang, dict }) {
       const lvl = levelOf();
       const n = Math.round((lvl / 100) * BATTERY_CELLS);
       const bar = '='.repeat(n) + '-'.repeat(BATTERY_CELLS - n);
-      return [`social battery: [${bar}] ${lvl}%`];
+      return [`${lang === 'tr' ? 'durum bataryası' : 'social battery'}: [${bar}] ${lvl}%`];
     }
     case 'theme':
     case 'skin':
-      return themeCmd(arg);
+      return themeCmd(arg, lang);
     case 'konami':
       unlockKonami();
-      return ['-> konami activated'];
+      return [lang === 'tr' ? '-> konami etkinleştirildi' : '-> konami activated'];
     case 'sudo':
       if (arg.trim() === HIRE || arg.trim() === `hire`) {
         return [dict.terminal.hireResp];
       }
-      return [`sudo: ${arg}: command not found`];
+      return [`sudo: ${arg}: ${lang === 'tr' ? 'komut bulunamadı' : 'command not found'}`];
     default:
       return [`bash: ${cmd}: ${lang === 'tr' ? 'komut bulunamadı. "help" yazarak seçenekleri görün.' : 'command not found. Type "help" for options.'}`];
   }
@@ -120,8 +121,8 @@ export default function Terminal({ onNavigate }) {
   const [history, setHistory] = useState([]);
   const [input, setInput] = useState('');
   const [typing, setTyping] = useState(false);
-  const bottomRef = useRef(null);
   const termRef = useRef(null);
+  const bottomRef = useRef(null);
   const inputRef = useRef(null);
   const hasAppeared = useRef(false);
 
@@ -213,7 +214,7 @@ export default function Terminal({ onNavigate }) {
       </div>
 
       <div className="border-t border-line bg-panel/50 px-4 py-2.5 flex flex-wrap gap-2 items-center">
-        <span className="text-dim text-[11px] mr-1">{lang === 'tr' ? 'Hızlı sor:' : 'Quick:'}</span>
+        <span className="text-dim text-[11px] mr-1">{lang === 'tr' ? 'Hızlı komut:' : 'Quick:'}</span>
         {dict.terminal.quick.map(([label, cmd]) => (
           <button
             key={cmd}

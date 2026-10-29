@@ -285,7 +285,7 @@ export default function Projects() {
             rel="noreferrer"
             className="text-amber font-mono text-xs flex items-center gap-1.5 hover:underline"
           >
-            <span>GitHub Profile ({site.githubUser})</span> →
+            <span>{lang === 'tr' ? 'GitHub Profili' : 'GitHub Profile'} ({site.githubUser})</span> →
           </a>
         </div>
 
@@ -308,7 +308,7 @@ export default function Projects() {
                             ★ {p.stars}
                           </span>
                         )}
-                        <span className="font-mono text-xs px-2 py-0.5 rounded border border-line text-dim">public</span>
+                        <span className="font-mono text-xs px-2 py-0.5 rounded border border-line text-dim">{lang === 'tr' ? 'açık kaynak' : 'public'}</span>
                       </div>
                     </div>
 
@@ -343,7 +343,7 @@ export default function Projects() {
                           onClick={copyCloneCmd}
                           className="text-[11px] text-dim hover:text-amber transition-colors px-1.5 py-0.5 rounded border border-line"
                         >
-                          {copied ? 'copied!' : 'copy'}
+                          {copied ? (lang === 'tr' ? 'kopyalandı!' : 'copied!') : (lang === 'tr' ? 'kopyala' : 'copy')}
                         </button>
                       </div>
                     </div>
@@ -437,8 +437,8 @@ export default function Projects() {
           </span>
           {repos.length > 1 && (
             <span className="proj-switch" role="group" aria-label="Layout">
-              <button type="button" aria-pressed={mode === 'shelf'} onClick={() => setMode('shelf')}>shelf</button>
-              <button type="button" aria-pressed={mode === 'ls'} onClick={() => setMode('ls')}>ls</button>
+              <button type="button" aria-pressed={mode === 'shelf'} onClick={() => setMode('shelf')}>{dict.projects.shelfView || 'shelf'}</button>
+              <button type="button" aria-pressed={mode === 'ls'} onClick={() => setMode('ls')}>{dict.projects.listView || 'ls'}</button>
             </span>
           )}
         </div>
@@ -456,7 +456,7 @@ export default function Projects() {
           <p className="proj-empty">
             grep: no match.{' '}
             <button type="button" className="proj-reset" onClick={resetFilters}>
-              clear filters
+              {lang === 'tr' ? 'filtreleri temizle' : 'clear filters'}
             </button>
           </p>
         ) : mode === 'ls' ? (
@@ -467,7 +467,7 @@ export default function Projects() {
                 {String(played).padStart(2, '0')}
                 <i>/{String(repos.length).padStart(2, '0')}</i>
               </span>
-              <span className="proj-played-label">{cleared ? 'all repositories explored' : 'repositories explored'}</span>
+              <span className="proj-played-label">{cleared ? (lang === 'tr' ? 'tüm repolar incelendi' : 'all repositories explored') : (lang === 'tr' ? 'repo incelendi' : 'repositories explored')}</span>
               <span
                 className="proj-played-bar"
                 style={{ '--p': repos.length ? played / repos.length : 0 }}

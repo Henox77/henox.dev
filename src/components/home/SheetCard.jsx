@@ -77,7 +77,7 @@ export default function SheetCard() {
       </div>
 
       <div className="p-4 grid gap-2 leading-relaxed">
-        <Row k="class">
+        <Row k={lang === 'tr' ? 'rol' : 'class'}>
           <button
             type="button"
             onClick={() => setCls((c) => (c + 1) % classesList.length)}

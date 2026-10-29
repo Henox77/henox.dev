@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react';
 import './Preloader.css';
 import { site } from '../../../config/site.js';
+import { useLang } from '../../../context/LangContext.jsx';
 
 export default function Preloader() {
+  const { lang } = useLang();
   const [hidden, setHidden] = useState(false);
   const [removed, setRemoved] = useState(false);
 
@@ -47,7 +49,9 @@ export default function Preloader() {
           <div key={i} className="banter-loader__box" />
         ))}
       </div>
-      <span className="font-mono text-[13px] text-dim">booting {site.handle} …</span>
+      <span className="font-mono text-[13px] text-dim">
+        {lang === 'tr' ? `${site.handle} başlatılıyor …` : `booting ${site.handle} …`}
+      </span>
     </div>
   );
 }
