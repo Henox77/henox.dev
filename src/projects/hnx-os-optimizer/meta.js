@@ -1,7 +1,8 @@
 import { repoUrl } from '../../config/site.js';
 
 export default {
-  order: 6,
+  order: 2,
+  featured: true,
   tags: ["c#","desktop","tool"],
   file: 'optimizer.cs',
   desc: 'Lightweight open-source Windows OS performance optimizer & latency reducer',

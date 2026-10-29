@@ -1,7 +1,7 @@
 import { repoUrl } from '../../config/site.js';
 
 export default {
-  order: 10,
+  order: 5,
   tags: ["os","simulation","web"],
   file: 'desktop.html',
   desc: 'Interactive Windows desktop simulator running entirely in browser DOM',

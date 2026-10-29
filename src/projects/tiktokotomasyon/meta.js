@@ -1,7 +1,7 @@
 import { repoUrl } from '../../config/site.js';
 
 export default {
-  order: 8,
+  order: 4,
   tags: ["automation","bot","js"],
   file: 'tiktok-bot.js',
   desc: 'Automated video rendering, scheduling and content distribution bot',
