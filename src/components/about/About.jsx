@@ -8,6 +8,8 @@ import { has, prefersReducedMotion } from '../../lib/env.js';
 import { observeOnce } from '../../lib/observe.js';
 import { useAsleep } from '../../lib/social.js';
 import { useLang } from '../../context/LangContext.jsx';
+import TechIcon from '../ui/TechIcon.jsx';
+import { TECH_COLORS } from '../../config/tech.js';
 import './About.css';
 import { SCROLL_MT_SUB, SECTION, WRAP } from '../../config/ui.js';
 import { labelOf } from '../../config/pages.js';
@@ -35,6 +37,12 @@ const SKILLS = (() => {
     .map(([name, items]) => [name, items.filter((s) => stack.includes(s))])
     .filter(([, items]) => items.length);
 })();
+
+const GROUP_NAMES = {
+  'Frontend Teknolojileri': { tr: 'Frontend Teknolojileri', en: 'Frontend Technologies' },
+  'Backend & API Sistemleri': { tr: 'Backend & API Sistemleri', en: 'Backend & API Systems' },
+  'Veritabanı & DevOps': { tr: 'Veritabanı & DevOps', en: 'Database & DevOps' },
+};
 
 function HelloLine({ sleeping, why, lang }) {
   const [word, setWord] = useState('hello');
@@ -271,10 +279,11 @@ export default function About() {
             <div className="ab-skills">
               {SKILLS.map(([name, items]) => (
                 <div key={name}>
-                  <div className="ab-k">{name}</div>
+                  <div className="ab-k">{GROUP_NAMES[name]?.[lang] ?? name}</div>
                   <div className="flex flex-wrap gap-2">
                     {items.map((s) => (
-                      <span key={s} className="ab-chip">
+                      <span key={s} className="ab-chip" style={TECH_COLORS[s] ? { '--c': TECH_COLORS[s] } : undefined}>
+                        <TechIcon name={s} />
                         {s}
                         {LEARNING.has(s) && <em>{lang === 'tr' ? 'öğreniyor' : 'learning'}</em>}
                       </span>

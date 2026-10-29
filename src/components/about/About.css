@@ -3,7 +3,7 @@
 .ab-win {
   min-width: 0;
   overflow: hidden;
-  border: 1px solid var(--line);
+  border: 1px solid color-mix(in srgb, var(--c) 30%, var(--line));
   border-radius: calc(10px * var(--rk, 1));
   background: var(--inset);
 }
@@ -12,7 +12,7 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  background: var(--panel);
+  background: color-mix(in srgb, var(--c) 7%, var(--panel));
   color: var(--text-dim);
   font: 500 12px/1 var(--f-mono);
 }
@@ -84,9 +84,9 @@
 
 .ab-card,
 .ab-stat {
-  border: 1px solid var(--line);
+  border: 1px solid color-mix(in srgb, var(--c) 30%, var(--line));
   border-radius: calc(10px * var(--rk, 1));
-  background: var(--panel);
+  background: color-mix(in srgb, var(--c) 7%, var(--panel));
 }
 .ab-card { padding: 18px 20px; }
 .ab-k {
@@ -158,17 +158,19 @@
 
 .ab-skills { display: grid; gap: 24px; padding: 22px; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); }
 .ab-chip {
+  --c: var(--amber);
   display: inline-flex;
   align-items: center;
   gap: 8px;
   padding: 7px 12px;
-  border: 1px solid var(--line);
+  border: 1px solid color-mix(in srgb, var(--c) 30%, var(--line));
   border-radius: calc(6px * var(--rk, 1));
-  background: var(--panel);
+  background: color-mix(in srgb, var(--c) 7%, var(--panel));
   font: 13px/1 var(--f-mono);
   transition: border-color var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease), transform var(--dur) var(--ease);
 }
-.ab-chip:hover { border-color: var(--amber); color: var(--amber); transform: translateY(-2px); }
+.ab-chip:hover { border-color: var(--c); color: var(--c); transform: translateY(-2px); }
+.ab-chip .chip-icon { width: 15px; height: 15px; flex: none; color: var(--c); }
 .ab-chip em {
   padding: 2px 5px;
   border: 1px solid color-mix(in srgb, var(--green) 45%, transparent);

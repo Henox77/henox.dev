@@ -11,3 +11,4 @@ export default {
   facts: [["type","file sharing"],["privacy","E2E encrypted"]],
   href: repoUrl('secure-share'),
 };
+

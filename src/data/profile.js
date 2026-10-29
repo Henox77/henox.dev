@@ -1,8 +1,8 @@
 import { site } from '../config/site.js';
 
 export const startYear = 2022;
-export const mainStack = 'React + TypeScript + Tailwind';
-export const learning = 'Next.js App Router & Cloud Architecture';
+export const mainStack = 'React + Next.js + Node.js';
+export const learning = 'Cloud & DevOps Architecture';
 
 export const aboutBlurbEn = `Coding since ${startYear}. Favorite stack is ${mainStack}, and I'm currently exploring ${learning}. Focused on creating fast, interactive, and playful web applications.`;
 export const aboutBlurbTr = `${startYear}'den beri tutkuyla kodluyorum. En sevdiğim teknoloji yığını ${mainStack} ve şu sıralar ${learning} üzerine odaklanıyorum. Hızlı, interaktif ve modern web deneyimleri inşa etmeyi seviyorum.`;
@@ -10,27 +10,39 @@ export const aboutBlurbTr = `${startYear}'den beri tutkuyla kodluyorum. En sevdi
 export const aboutBlurb = aboutBlurbEn;
 
 export const stack = [
-  'HTML',
-  'CSS',
+  'HTML5',
+  'CSS3',
   'JavaScript',
-  'TypeScript',
   'React',
   'Next.js',
-  'Node.js',
+  'Vite',
   'Tailwind CSS',
-  'Git',
-  'Docker',
+  'Node.js',
+  'PHP',
+  'Laravel',
+  'ASP.NET Core',
+  'Python',
+  'SQL / DB',
   'PostgreSQL',
-  'Figma',
+  'Docker',
 ];
 
 export const skillGroups = [
-  ['languages', ['JavaScript', 'TypeScript', 'HTML', 'CSS']],
-  ['frameworks', ['React', 'Next.js', 'Node.js', 'Tailwind CSS']],
-  ['backend & tools', ['Git', 'Docker', 'PostgreSQL', 'Figma']],
+  [
+    'Frontend Teknolojileri',
+    ['HTML5', 'CSS3', 'JavaScript', 'React', 'Next.js', 'Vite', 'Tailwind CSS'],
+  ],
+  [
+    'Backend & API Sistemleri',
+    ['Node.js', 'PHP', 'Laravel', 'ASP.NET Core', 'Python'],
+  ],
+  [
+    'Veritabanı & DevOps',
+    ['SQL / DB', 'PostgreSQL', 'Docker'],
+  ],
 ];
 
-export const learningSkills = ['Next.js', 'Docker', 'TypeScript'];
+export const learningSkills = ['Next.js', 'Docker', 'ASP.NET Core'];
 
 export const gitLog = [
   {
