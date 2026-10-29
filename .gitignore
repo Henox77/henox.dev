@@ -4,3 +4,6 @@ dist/
 .DS_Store
 henox-lab/
 *.patch
+
+# Local Netlify folder
+.netlify
