@@ -73,16 +73,11 @@ export function Footer() {
   const { dict } = useLang();
   return (
     <footer className="py-10 text-center font-mono text-[12.5px] text-dim border-t border-line flex flex-col items-center justify-center gap-3.5">
-      <div className="relative group cursor-pointer">
+      <div>
         <img
           src="/henox.png"
           alt="Henox"
-          className="w-12 h-12 rounded-full border border-amber/40 p-0.5 object-cover transition-all duration-300 group-hover:scale-110 group-hover:border-amber shadow-[0_0_16px_rgba(245,158,11,0.25)]"
-        />
-        <span
-          className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2 border-panel"
-          style={{ backgroundColor: 'var(--green)' }}
-          title="online"
+          className="h-[31px] w-[88px] object-contain"
         />
       </div>
       <p>{dict.footer.copy}</p>
