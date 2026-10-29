@@ -1,0 +1,100 @@
+
+
+:root {
+  --sb-size: 10px;
+  --sb-gap: 2px;
+  --sb-min-thumb: 36px;
+  --sb-track: transparent;
+  --sb-thumb: color-mix(in srgb, var(--text-dim) 40%, transparent);
+  --sb-thumb-hover: color-mix(in srgb, var(--text-dim) 70%, transparent);
+}
+
+
+.scroll-amber {
+  --sb-thumb: var(--amber-dim);
+  --sb-thumb-hover: var(--amber);
+}
+
+.scroll-thin::-webkit-scrollbar,
+.scroll-amber::-webkit-scrollbar {
+  width: var(--sb-size);
+  height: var(--sb-size);
+}
+.scroll-thin::-webkit-scrollbar-track,
+.scroll-amber::-webkit-scrollbar-track {
+  background: var(--sb-track);
+}
+.scroll-thin::-webkit-scrollbar-button,
+.scroll-amber::-webkit-scrollbar-button {
+  display: none;
+}
+.scroll-thin::-webkit-scrollbar-corner,
+.scroll-amber::-webkit-scrollbar-corner {
+  background: transparent;
+}
+.scroll-thin::-webkit-scrollbar-thumb,
+.scroll-amber::-webkit-scrollbar-thumb {
+  min-height: var(--sb-min-thumb);
+  min-width: var(--sb-min-thumb);
+  border: var(--sb-gap) solid transparent;
+  border-radius: 999px;
+  background-color: var(--sb-thumb);
+  background-clip: padding-box;
+}
+.scroll-thin::-webkit-scrollbar-thumb:hover,
+.scroll-thin::-webkit-scrollbar-thumb:active,
+.scroll-amber::-webkit-scrollbar-thumb:hover,
+.scroll-amber::-webkit-scrollbar-thumb:active {
+  background-color: var(--sb-thumb-hover);
+}
+
+
+.scroll-hidden {
+  -ms-overflow-style: none;
+}
+.scroll-hidden::-webkit-scrollbar {
+  display: none;
+}
+
+
+::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+::-webkit-scrollbar-track {
+  background-color: var(--bg);
+  background-image: radial-gradient(var(--dot-grid) 1px, transparent 1px);
+  background-size: 8px 8px;
+  border-left: 1px solid var(--line);
+}
+::-webkit-scrollbar-thumb {
+  min-height: 48px;
+  border: 3px solid transparent;
+  border-radius: 8px;
+  background-color: var(--amber-dim);
+  background-clip: padding-box;
+}
+::-webkit-scrollbar-thumb:hover,
+::-webkit-scrollbar-thumb:active {
+  background-color: var(--amber);
+}
+::-webkit-scrollbar-corner {
+  background: var(--bg);
+}
+
+
+@supports not selector(::-webkit-scrollbar) {
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--amber-dim) var(--bg);
+  }
+  .scroll-thin {
+    scrollbar-color: var(--sb-thumb) transparent;
+  }
+  .scroll-amber {
+    scrollbar-color: var(--sb-thumb) transparent;
+  }
+  .scroll-hidden {
+    scrollbar-width: none;
+  }
+}

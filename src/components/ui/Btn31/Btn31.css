@@ -1,0 +1,74 @@
+
+
+.btn-31 {
+  background-color: var(--inset);
+  color: var(--text);
+  border: 1px solid var(--amber-dim);
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  transition: color var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease);
+}
+.btn-31::before {
+  background: var(--amber);
+  clip-path: polygon(100% 0, 100% 100%, 0 100%, 100% 100%);
+  content: '';
+  inset: 0;
+  position: absolute;
+  transition: clip-path var(--dur-fast) var(--ease);
+}
+.btn-31 .text-container {
+  display: block;
+  overflow: hidden;
+  position: relative;
+}
+.btn-31 .text {
+  display: block;
+  font-weight: 900;
+  position: relative;
+}
+
+@media (hover: hover) {
+  .btn-31:hover {
+    color: var(--on-amber);
+    border-color: var(--amber);
+  }
+  .btn-31:hover::before {
+    clip-path: polygon(100% 0, 0% 0%, 0 100%, 100% 100%);
+  }
+  .btn-31:hover .text {
+    animation: btn31-move-up-alt var(--dur) ease forwards;
+  }
+}
+@media (hover: none) {
+  .btn-31:active { color: var(--on-amber); border-color: var(--amber); }
+  .btn-31:active::before { clip-path: polygon(100% 0, 0% 0%, 0 100%, 100% 100%); }
+}
+
+.btn-31 .btn-31-icon {
+  display: block;
+  overflow: hidden;
+}
+.btn-31 .btn-31-icon > svg {
+  display: block;
+}
+@media (hover: hover) {
+  .btn-31:hover .btn-31-icon > svg {
+    animation: btn31-icon-fly 0.45s linear forwards;
+  }
+}
+@keyframes btn31-icon-fly {
+  0%   { transform: translate(0, 0);        animation-timing-function: cubic-bezier(0.5, 0, 1, 1); }
+  42%  { transform: translate(115%, -115%); }
+  43%  { transform: translate(-115%, 115%); animation-timing-function: cubic-bezier(0.1, 0.7, 0.2, 1); }
+  100% { transform: translate(0, 0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .btn-31:hover .btn-31-icon > svg { animation: none; }
+}
+@keyframes btn31-move-up-alt {
+  0% { transform: translateY(0); }
+  50% { transform: translateY(80%); }
+  51% { transform: translateY(-80%); }
+  100% { transform: translateY(0); }
+}

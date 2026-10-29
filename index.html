@@ -1,0 +1,67 @@
+<!doctype html>
+
+<html lang="en" data-theme="dark" data-skin="{{defaultSkin}}">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{title}}</title>
+    <meta name="author" content="{{name}}" />
+    <meta name="copyright" content="© {{year}} {{name}}" />
+    <meta name="description" content="{{description}}" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="{{title}}" />
+    <meta property="og:description" content="{{description}}" />
+    <meta property="og:url" content="{{siteUrl}}" />
+    <meta property="og:site_name" content="{{handle}}" />
+    <meta property="og:image" content="{{siteUrl}}og.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content="{{siteUrl}}og.png" />
+    <meta name="theme-color" content="#0a0c10" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/henox.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    
+    <link
+      href="{{fontsUrl}}"
+      rel="stylesheet"
+      media="print"
+      onload="this.media='all'"
+    />
+    <noscript>
+      <link
+        href="{{fontsUrl}}"
+        rel="stylesheet"
+      />
+    </noscript>
+    <script>
+      (function () {
+        var saved = null,
+          skin = null,
+          eff = null;
+        try {
+          saved = localStorage.getItem('{{themeKey}}');
+          skin = localStorage.getItem('{{skinKey}}');
+          eff = localStorage.getItem('{{skinEffKey}}');
+        } catch (e) {}
+        var ids = '{{skinIds}}'.split(',');
+        var locks = '{{skinLocks}}'.split(',');
+        if (skin === 'auto') skin = eff;
+        if (ids.indexOf(skin) < 0) skin = '{{defaultSkin}}';
+        var theme = saved === 'light' ? 'light' : 'dark';
+        for (var i = 0; i < locks.length; i++) {
+          var p = locks[i].split(':');
+          if (p[0] === skin) theme = p[1];
+        }
+        document.documentElement.dataset.skin = skin;
+        document.documentElement.dataset.theme = theme;
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>

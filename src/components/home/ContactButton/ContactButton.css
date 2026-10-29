@@ -1,0 +1,33 @@
+
+
+.btn-contact svg {
+  transition: transform var(--dur-slow) var(--ease), opacity 0.3s ease;
+}
+.btn-contact-main {
+  transition: transform var(--dur-slow) var(--ease);
+  transition-delay: 300ms;
+}
+.btn-contact-alt {
+  transform: translateX(-150%);
+  transition: transform var(--dur-slow) var(--ease);
+}
+
+
+@media (hover: hover) {
+  .btn-contact:hover svg {
+    transform: scale(3) translate(50%);
+  }
+  .btn-contact:hover .btn-contact-main {
+    transform: translateX(200%);
+  }
+  .btn-contact:hover .btn-contact-alt {
+    transform: translateX(0);
+    transition-delay: 300ms;
+  }
+}
+
+
+.btn-contact {
+  color: var(--contact-ink);
+  text-shadow: 2px 2px var(--contact-shadow);
+}

@@ -1,0 +1,54 @@
+.cal-art {
+  position: absolute;
+  inset: 0;
+  padding: 22px 28px 0;
+
+  -webkit-mask-image: radial-gradient(ellipse 80% 95% at 50% 18%, #000 30%, transparent 100%);
+  mask-image: radial-gradient(ellipse 80% 95% at 50% 18%, #000 30%, transparent 100%);
+}
+.cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 9px;
+}
+.cal-head {
+  height: 5px;
+  margin: 6px 6px 2px;
+  border-radius: 3px;
+  background: currentColor;
+  opacity: 0.35;
+}
+.cal-head.today { opacity: 1; }
+.cal-cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 36px;
+  border-radius: 7px;
+  border: 1px solid var(--line);
+  background: color-mix(in srgb, currentColor 6%, transparent);
+}
+.cal-cell.on {
+  border-color: color-mix(in srgb, currentColor 55%, transparent);
+  background: color-mix(in srgb, currentColor 28%, transparent);
+}
+
+.cal-stamp {
+  font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  line-height: 1;
+  padding: 3px 5px;
+  border: 1.5px solid currentColor;
+  border-radius: 4px;
+  transform: rotate(-9deg);
+  animation: cal-stamp-in 0.5s cubic-bezier(0.2, 1.4, 0.4, 1) 0.35s both;
+}
+@keyframes cal-stamp-in {
+  from { opacity: 0; transform: rotate(-9deg) scale(1.9); }
+  to { opacity: 1; transform: rotate(-9deg) scale(1); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cal-stamp { animation: none; }
+}

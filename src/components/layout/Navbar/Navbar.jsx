@@ -1,0 +1,526 @@
+import { useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
+import ThemeToggleTorch from '../ThemeToggleTorch/ThemeToggleTorch.jsx';
+import SkinButton from '../Skin/SkinButton.jsx';
+import LangToggle from '../LangToggle/LangToggle.jsx';
+import { useLang } from '../../../context/LangContext.jsx';
+import ScrollArrow from '../ScrollArrow/ScrollArrow.jsx';
+import { CONTACT, PAGES, pageOfView, topOf } from '../../../config/pages.js';
+import { pathOf } from '../../../lib/paths.js';
+import { isPlainClick, scrollToAnchor } from '../../../lib/dom.js';
+import { MQ_MD, hasFinePointer } from '../../../lib/env.js';
+import useHideOnScroll from '../../../lib/useHideOnScroll.js';
+import './Navbar.css';
+import { site } from '../../../config/site.js';
+import { WRAP } from '../../../config/ui.js';
+
+const BRAND_SHRINK = Math.max(0, site.handle.length - 'cd ~/'.length);
+
+const mainLinks = [
+  ...PAGES.map((p) => ({ href: `#${p.id}`, label: p.label, tab: p.id })),
+  { href: CONTACT.href, label: CONTACT.label },
+];
+
+const realHref = (l) => (l.tab ? pathOf(l.tab) : pathOf('home') + l.href);
+
+function NavLink({ as: Tag = 'a', href, onClick, className = '', linkRef, children, ...rest }) {
+  return (
+    <Tag
+      ref={linkRef}
+      href={Tag === 'a' ? href : undefined}
+      type={Tag === 'button' ? 'button' : undefined}
+      onClick={onClick}
+      {...rest}
+      className={`nav-link shrink-0 px-3 py-1.5 font-mono text-[13px] text-dim hover:text-amber ${className}`}
+    >
+      <span className="nav-link-text whitespace-nowrap">{children}</span>
+    </Tag>
+  );
+}
+
+const MAX_INLINE_SUB = 3;
+const MENU_W = 220;
+const HOVER_CLOSE_MS = 160;
+
+const mouseOnly = (fn) => (e) => {
+  if (e.pointerType === 'mouse') fn();
+};
+
+function SubMenu({ label, links, onSelect }) {
+  const [open, setOpen] = useState(false);
+  const [pos, setPos] = useState({ top: 0, left: 0 });
+  const btnRef = useRef(null);
+  const menuRef = useRef(null);
+  const closeTimer = useRef(0);
+  const focusOnOpen = useRef(false);
+
+  useEffect(() => () => clearTimeout(closeTimer.current), []);
+
+  useEffect(() => {
+    if (open && focusOnOpen.current) menuRef.current?.querySelector('[role="menuitem"]')?.focus();
+    focusOnOpen.current = false;
+  }, [open]);
+
+  useEffect(() => {
+    if (!open) return;
+    const close = () => setOpen(false);
+    const inside = (t) => menuRef.current?.contains(t) || btnRef.current?.contains(t);
+    const onDown = (e) => {
+      if (!inside(e.target)) close();
+    };
+    const onKey = (e) => e.key === 'Escape' && close();
+    const onScroll = (e) => {
+      if (!menuRef.current?.contains(e.target)) close();
+    };
+    document.addEventListener('pointerdown', onDown);
+    document.addEventListener('keydown', onKey);
+    window.addEventListener('resize', close);
+    window.addEventListener('scroll', onScroll, true);
+    return () => {
+      document.removeEventListener('pointerdown', onDown);
+      document.removeEventListener('keydown', onKey);
+      window.removeEventListener('resize', close);
+      window.removeEventListener('scroll', onScroll, true);
+    };
+  }, [open]);
+
+  const show = () => {
+    clearTimeout(closeTimer.current);
+    if (open) return;
+    const r = btnRef.current.getBoundingClientRect();
+    setPos({ top: r.bottom - 2, left: Math.max(8, Math.min(r.left, window.innerWidth - MENU_W - 8)) });
+    setOpen(true);
+  };
+  const hideSoon = () => {
+    clearTimeout(closeTimer.current);
+    closeTimer.current = setTimeout(() => setOpen(false), HOVER_CLOSE_MS);
+  };
+  const keepOpen = () => clearTimeout(closeTimer.current);
+
+  const onTriggerClick = (e) => {
+    e.preventDefault();
+    if (e.detail > 0 && hasFinePointer()) return show();
+    if (open) setOpen(false);
+    else {
+      focusOnOpen.current = e.detail === 0;
+      show();
+    }
+  };
+
+  const onTriggerKeyDown = (e) => {
+    if (e.key !== 'ArrowDown') return;
+    e.preventDefault();
+    focusOnOpen.current = true;
+    if (open) menuRef.current?.querySelector('[role="menuitem"]')?.focus();
+    else show();
+  };
+  const onMenuKeyDown = (e) => {
+    const items = [...menuRef.current.querySelectorAll('[role="menuitem"]')];
+    const i = items.indexOf(document.activeElement);
+    const go = (n) => {
+      e.preventDefault();
+      items[(n + items.length) % items.length]?.focus();
+    };
+    if (e.key === 'ArrowDown') go(i + 1);
+    else if (e.key === 'ArrowUp') go(i - 1);
+    else if (e.key === 'Home') go(0);
+    else if (e.key === 'End') go(items.length - 1);
+    else if (e.key === 'Escape') {
+      setOpen(false);
+      btnRef.current?.focus();
+    } else if (e.key === 'Tab') {
+      btnRef.current?.focus();
+      setOpen(false);
+    }
+  };
+
+  return (
+    <>
+      <NavLink
+        as="button"
+        linkRef={btnRef}
+        onClick={onTriggerClick}
+        onKeyDown={onTriggerKeyDown}
+        onPointerEnter={mouseOnly(show)}
+        onPointerLeave={mouseOnly(hideSoon)}
+        aria-haspopup="menu"
+        aria-expanded={open}
+        className={open ? 'is-open text-amber' : ''}
+      >
+        {label}
+        <span className={`sub-menu-caret ${open ? 'is-open' : ''}`} aria-hidden="true">
+          ▼
+        </span>
+      </NavLink>
+      {open &&
+        createPortal(
+          <div
+            ref={menuRef}
+            role="menu"
+            onKeyDown={onMenuKeyDown}
+            className="sub-menu scroll-amber"
+            style={{ top: pos.top, left: pos.left, width: MENU_W }}
+            onPointerEnter={mouseOnly(keepOpen)}
+            onPointerLeave={mouseOnly(hideSoon)}
+          >
+            {links.map((l) => (
+              <a
+                key={l.href}
+                href={l.href}
+                role="menuitem"
+                tabIndex={-1}
+                className="sub-menu-item"
+                onClick={(e) => {
+                  if (!isPlainClick(e)) return;
+                  e.preventDefault();
+                  setOpen(false);
+                  onSelect(l);
+                }}
+              >
+                {l.label}
+              </a>
+            ))}
+          </div>,
+          document.body
+        )}
+    </>
+  );
+}
+
+const fadeRight = (on) =>
+  on
+    ? {
+        WebkitMaskImage: 'linear-gradient(to right, #000 calc(100% - 32px), transparent)',
+        maskImage: 'linear-gradient(to right, #000 calc(100% - 32px), transparent)',
+      }
+    : undefined;
+
+function useMoreDot(deps) {
+  const ref = useRef(null);
+  const [hasMore, setHasMore] = useState(false);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+
+    const check = () => {
+      setHasMore(el.scrollWidth - el.clientWidth - el.scrollLeft > 4);
+    };
+
+    check();
+    const wheel = (e) => {
+      const max = el.scrollWidth - el.clientWidth;
+      if (max <= 0 || Math.abs(e.deltaX) > Math.abs(e.deltaY)) return;
+      if ((e.deltaY < 0 && el.scrollLeft <= 0) || (e.deltaY > 0 && el.scrollLeft >= max)) return;
+      e.preventDefault();
+      el.scrollLeft += e.deltaY;
+    };
+    el.addEventListener('scroll', check, { passive: true });
+    el.addEventListener('wheel', wheel, { passive: false });
+    window.addEventListener('resize', check);
+    return () => {
+      el.removeEventListener('scroll', check);
+      el.removeEventListener('wheel', wheel);
+      window.removeEventListener('resize', check);
+    };
+  }, deps);
+
+  return [ref, hasMore];
+}
+
+function useViewHistory(view, onNavigate) {
+  const historyRef = useRef(['home']);
+
+  useEffect(() => {
+    const stack = historyRef.current;
+    if (view === 'home') historyRef.current = ['home'];
+    else if (stack[stack.length - 2] === view) stack.pop();
+    else if (stack[stack.length - 1] !== view) {
+      const parent = topOf(view);
+      const top = stack[stack.length - 1];
+      if (parent === view) stack.push(view);
+      else if (topOf(top) === parent && top !== parent) stack[stack.length - 1] = view;
+      else {
+        if (top !== parent) stack.push(parent);
+        stack.push(view);
+      }
+    }
+  }, [view]);
+
+  const goBack = () => {
+    const stack = historyRef.current;
+    const target = stack.length > 1 ? stack[stack.length - 2] : 'home';
+    if (history.state?.from === target) history.back();
+    else onNavigate(target);
+  };
+
+  const goHome = () => onNavigate('home');
+
+  return { goBack, goHome };
+}
+
+export default function Navbar({ theme, onToggleTheme, onOpenSkins, view, onNavigate }) {
+  const { dict } = useLang();
+  const inTab = view !== 'home';
+  const top = topOf(view);
+  const upHref = pathOf(top !== view ? top : 'home');
+  const localLinks = pageOfView(view)?.sub || [];
+  const { goBack, goHome } = useViewHistory(view, onNavigate);
+
+  const jumpLinks = mainLinks.filter((l) => l.tab !== top);
+
+  const [mainRowRef, mainHasMore] = useMoreDot([inTab]);
+  const [subRowRef, subHasMore] = useMoreDot([inTab, view]);
+
+  const [menuOpen, setMenuOpen] = useState(false);
+  const burgerRef = useRef(null);
+  const panelRef = useRef(null);
+  const [navHidden, showNav] = useHideOnScroll(menuOpen);
+
+  useEffect(() => {
+    document.documentElement.dataset.nav = navHidden ? 'hidden' : 'shown';
+  }, [navHidden]);
+
+  useEffect(() => setMenuOpen(false), [view]);
+
+  useEffect(() => {
+    if (mainRowRef.current) mainRowRef.current.inert = inTab;
+    if (subRowRef.current) subRowRef.current.inert = !inTab;
+  }, [inTab, mainRowRef, subRowRef]);
+
+  useEffect(() => {
+    if (!menuOpen) return;
+    const onDown = (e) => {
+      if (!panelRef.current?.contains(e.target) && !burgerRef.current?.contains(e.target)) setMenuOpen(false);
+    };
+    const onKey = (e) => {
+      if (e.key !== 'Escape') return;
+      setMenuOpen(false);
+      burgerRef.current?.focus();
+    };
+    const wide = window.matchMedia(MQ_MD);
+    const onWide = (e) => e.matches && setMenuOpen(false);
+    document.addEventListener('pointerdown', onDown);
+    document.addEventListener('keydown', onKey);
+    wide.addEventListener('change', onWide);
+    return () => {
+      document.removeEventListener('pointerdown', onDown);
+      document.removeEventListener('keydown', onKey);
+      wide.removeEventListener('change', onWide);
+    };
+  }, [menuOpen]);
+
+  const clickMain = (l) => (e) => {
+    if (!isPlainClick(e)) return;
+    if (l.tab) {
+      e.preventDefault();
+      onNavigate(l.tab);
+    } else if (view === 'home') {
+      e.preventDefault();
+      scrollToAnchor(l.href);
+    }
+  };
+  const selectSub = (l) => (l.view ? onNavigate(l.view) : scrollToAnchor(l.href));
+  const clickSub = (l) => (e) => {
+    if (!isPlainClick(e)) return;
+    e.preventDefault();
+    selectSub(l);
+  };
+  const clickJump = (l) => (e) => {
+    if (!isPlainClick(e)) return;
+    e.preventDefault();
+    onNavigate(l.tab || 'home', l.tab ? undefined : l.href);
+  };
+  const clickBack = (e) => {
+    if (!isPlainClick(e)) return;
+    e.preventDefault();
+    goBack();
+  };
+  const inMenu = (handler) => (e) => {
+    handler(e);
+    setMenuOpen(false);
+  };
+
+  return (
+    <>
+      <nav
+        className={`sticky top-0 z-50 border-b border-line backdrop-blur-md transition-transform duration-300 ease-in-out ${
+          navHidden ? '-translate-y-full' : ''
+        }`}
+        style={{ background: 'var(--nav-bg)' }}
+        onFocus={showNav}
+      >
+        <div className={`${WRAP} flex items-center gap-6 h-[var(--nav-h)]`}>
+          <a
+            href={pathOf('home')}
+            aria-label={`${site.handle} — back to home`}
+            onClick={(e) => {
+              if (!isPlainClick(e)) return;
+              e.preventDefault();
+              if (inTab) goHome();
+              else window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
+            className="brand touch-hit font-mono text-sm flex items-center gap-2 cursor-pointer"
+            style={{ '--brand-shrink': BRAND_SHRINK }}
+          >
+            <span className="brand-mark" aria-hidden="true">
+              <span className="brand-dot" />
+              <b>{'{'}</b>
+            </span>
+            <span className="brand-word">
+              <span className="brand-roll">
+                <span>{site.handle}</span>
+                <span aria-hidden="true">cd ~/</span>
+              </span>
+              <b className="brand-close" aria-hidden="true">{'}'}</b>
+            </span>
+          </a>
+
+          <div className="hidden md:flex relative h-full items-center min-w-0 flex-1 pr-4">
+            <div
+              ref={mainRowRef}
+              style={fadeRight(!inTab && mainHasMore)}
+              className={`scroll-hidden flex items-center gap-1.5 w-full overflow-x-auto transition-[opacity,transform] duration-300 ease-in-out ${
+                inTab
+                  ? 'opacity-0 -translate-x-3 pointer-events-none'
+                  : 'opacity-100 translate-x-0 delay-150'
+              }`}
+            >
+              {mainLinks.map((l) => (
+                <NavLink
+                  key={l.href}
+                  href={realHref(l)}
+                  onClick={clickMain(l)}
+                >
+                  {l.label}
+                </NavLink>
+              ))}
+            </div>
+            <span className={`nav-more-dot ${!inTab && mainHasMore ? 'is-visible' : ''}`} aria-hidden="true" />
+
+            <div
+              ref={subRowRef}
+              style={fadeRight(inTab && subHasMore)}
+              className={`scroll-hidden flex items-center gap-1.5 absolute left-0 right-4 top-0 h-full overflow-x-auto transition-[opacity,transform] duration-300 ease-in-out ${
+                inTab
+                  ? 'opacity-100 translate-x-0 delay-150'
+                  : 'opacity-0 translate-x-3 pointer-events-none'
+              }`}
+            >
+              <NavLink href={upHref} onClick={clickBack} className="nav-back">
+                cd ..
+              </NavLink>
+              {localLinks.length > MAX_INLINE_SUB ? (
+                <SubMenu key={top} label={`ls ${top}/`} links={localLinks} onSelect={selectSub} />
+              ) : (
+                localLinks.map((l) => (
+                  <NavLink
+                    key={l.href}
+                    href={l.href}
+                    onClick={clickSub(l)}
+                  >
+                    {l.label}
+                  </NavLink>
+                ))
+              )}
+              {localLinks.length > 0 && (
+                <span className="h-4 border-l border-dashed border-line mx-1" aria-hidden="true" />
+              )}
+              {jumpLinks.map((l) => (
+                <NavLink
+                  key={l.href}
+                  href={realHref(l)}
+                  onClick={clickJump(l)}
+                  className="opacity-70 hover:opacity-100"
+                >
+                  ../{l.label}
+                </NavLink>
+              ))}
+            </div>
+            <span className={`nav-more-dot ${inTab && subHasMore ? 'is-visible' : ''}`} aria-hidden="true" />
+          </div>
+
+          <div className="ml-auto flex items-center gap-2">
+            <button
+              ref={burgerRef}
+              type="button"
+              onClick={() => setMenuOpen((o) => !o)}
+              aria-label={menuOpen ? 'Close menu' : 'Open menu'}
+              aria-expanded={menuOpen}
+              aria-controls={menuOpen ? 'mobile-menu' : undefined}
+              className={`burger inline-flex items-center justify-center md:hidden ${menuOpen ? 'is-open' : ''}`}
+            >
+              <span className="burger-bars" aria-hidden="true">
+                <span />
+                <span />
+                <span />
+              </span>
+            </button>
+
+            {menuOpen && (
+              <div id="mobile-menu" ref={panelRef} className="mobile-menu md:hidden">
+                <SkinButton variant="row" onClick={inMenu(onOpenSkins)} />
+                <div className="py-2 border-b border-line mb-1">
+                  <LangToggle variant="row" />
+                </div>
+                {inTab ? (
+                  <>
+                    <a href={upHref} onClick={inMenu(clickBack)} className="mobile-menu-link">
+                      cd ..
+                    </a>
+                    {localLinks.length > 0 && <div className="mobile-menu-head">{top}/</div>}
+                    {localLinks.map((l) => (
+                      <a key={l.href} href={l.href} onClick={inMenu(clickSub(l))} className="mobile-menu-link">
+                        {l.label}
+                      </a>
+                    ))}
+                    <div className="mobile-menu-head">{dict.nav.jumpTo}</div>
+                    {jumpLinks.map((l) => (
+                      <a key={l.href} href={realHref(l)} onClick={inMenu(clickJump(l))} className="mobile-menu-link">
+                        ../{l.label}
+                      </a>
+                    ))}
+                  </>
+                ) : (
+                  <>
+                    <div className="mobile-menu-head">{dict.nav.lsHome}</div>
+                    {mainLinks.map((l) => (
+                      <a key={l.href} href={realHref(l)} onClick={inMenu(clickMain(l))} className="mobile-menu-link">
+                        {l.label}
+                      </a>
+                    ))}
+                  </>
+                )}
+              </div>
+            )}
+
+            <span className="hidden md:inline-flex items-center gap-3">
+              <LangToggle />
+              <SkinButton variant="icon" onClick={onOpenSkins} />
+              <span className="h-5 border-l border-line" aria-hidden="true" />
+            </span>
+            <ThemeToggleTorch theme={theme} onToggle={onToggleTheme} />
+          </div>
+        </div>
+      </nav>
+
+      {}
+      <div
+        aria-hidden="true"
+        className={`edge-back-zone group hidden xl:flex items-center fixed left-0 top-[var(--nav-h)] bottom-0 w-16 z-40 ${
+          inTab ? '' : 'pointer-events-none'
+        }`}
+      >
+        <div
+          className={`pl-3 transition-[opacity,transform] duration-300 ease-out ${
+            inTab
+              ? 'opacity-0 scale-75 -translate-x-2 group-hover:opacity-100 group-hover:scale-100 group-hover:translate-x-0'
+              : 'opacity-0 scale-75 -translate-x-2'
+          }`}
+        >
+          <ScrollArrow ariaLabel="Go back" onClick={goBack} tabIndex={-1} />
+        </div>
+      </div>
+    </>
+  );
+}

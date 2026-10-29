@@ -1,0 +1,107 @@
+
+.letters-yard {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.letter {
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font: 700 var(--fs, 40px) / 1 var(--f-mono);
+  color: var(--text);
+
+  text-shadow: 0.06em 0.06em 0 color-mix(in srgb, var(--amber) 38%, transparent);
+  opacity: 0;
+  pointer-events: auto;
+  touch-action: none;
+  cursor: grab;
+  will-change: transform;
+  transition: opacity var(--dur) var(--ease), color var(--dur) var(--ease);
+}
+.letter[data-live] {
+  opacity: 1;
+}
+.letter[data-hot] {
+  color: var(--amber);
+}
+.letter[data-held] {
+  cursor: grabbing;
+  z-index: 1;
+}
+
+.letter-extra {
+  animation: letter-in var(--dur) var(--ease) backwards;
+}
+@keyframes letter-in {
+  from { opacity: 0; }
+}
+
+.letters-yard[data-asleep] .letter[data-live] {
+  opacity: 0.45;
+}
+
+.letters-yard[data-rainbow] .letter {
+  color: hsl(calc(var(--i) * 45) 90% 62%);
+  animation: letter-hue 2.4s linear infinite;
+}
+@keyframes letter-hue {
+  to { filter: hue-rotate(360deg); }
+}
+
+
+.letters-ctrl {
+  max-width: 440px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--dur-slow) var(--ease);
+}
+.letters-ctrl[data-ready] {
+  opacity: 1;
+  pointer-events: auto;
+}
+.letters-hint {
+  margin: 0 0 10px;
+  font: 12px/1.5 var(--f-mono);
+  color: var(--text-dim);
+  opacity: 0.8;
+  transition: opacity var(--dur-slow) var(--ease);
+}
+.letters-ctrl[data-touched] .letters-hint {
+  opacity: 0.35;
+}
+.letters-btns {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.letters-btns button {
+  font: 12px/1 var(--f-mono);
+  color: var(--text-dim);
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: calc(6px * var(--rk, 1));
+  padding: 7px 11px;
+  cursor: pointer;
+  touch-action: manipulation;
+  transition: color var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease);
+}
+.letters-btns button:is(:hover, :focus-visible):not(:disabled) {
+  color: var(--amber);
+  border-color: var(--amber-dim);
+}
+.letters-btns button[aria-pressed='true'] {
+  color: var(--amber);
+  border-color: var(--amber);
+}
+.letters-btns button:disabled {
+  opacity: 0.4;
+  cursor: default;
+}

@@ -1,0 +1,50 @@
+{
+  "name": "henox.dev",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Henox's personal portfolio: a terminal / code-editor styled site built with React + Tailwind (TR & EN)",
+  "author": {
+    "name": "Henox",
+    "url": "https://github.com/Henox77"
+  },
+  "license": "MIT",
+  "homepage": "https://henox.dev/",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Henox77/henox.dev.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Henox77/henox.dev/issues"
+  },
+  "type": "module",
+  "engines": {
+    "node": "^20.19.0 || ^22.13.0 || >=24"
+  },
+  "scripts": {
+    "dev": "vite --config system/vite.config.js",
+    "build": "vite build --config system/vite.config.js && node system/scripts/spa-404.mjs",
+    "preview": "vite preview --config system/vite.config.js",
+    "previews": "node system/scripts/make-previews.mjs",
+    "lint": "eslint --config system/eslint.config.js .",
+    "check:skins": "node system/scripts/check-skins.mjs"
+  },
+  "dependencies": {
+    "matter-js": "^0.20.0",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@tailwindcss/vite": "^4.3.3",
+    "@vitejs/plugin-react": "^6.1.1",
+    "eslint": "^10.12.0",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "globals": "^17.13.0",
+    "tailwindcss": "^4.3.3",
+    "vite": "^8.3.2"
+  },
+  "prettier": {
+    "singleQuote": true,
+    "printWidth": 120
+  }
+}
