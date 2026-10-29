@@ -9,7 +9,7 @@ export function Signature() {
   const [drawn, setDrawn] = useState(false);
   const [open, setOpen] = useState(false);
   const pointer = useRef('mouse');
-  const { dict, lang } = useLang();
+  const { dict } = useLang();
 
   useEffect(() => {
     return observeOnce(ref.current, () => setDrawn(true), 0.4);
@@ -25,33 +25,48 @@ export function Signature() {
   };
 
   return (
-    <section id="signature" className="py-20 border-t border-line">
-      <div className="wrap max-w-[1040px] mx-auto px-8 flex justify-center">
-        <div
-          ref={ref}
-          role="button"
-          tabIndex={0}
-          aria-pressed={open}
-          aria-label={`${site.realName}, ${site.handle}`}
-          className={`sig-card relative w-[300px] h-[190px] bg-panel grid place-content-center rounded-[10px] overflow-hidden transition-all duration-500${
-            open ? ' is-open' : ''
-          }`}
-          onPointerEnter={(e) => isMouse(e) && setOpen(true)}
-          onPointerLeave={(e) => isMouse(e) && setOpen(false)}
-          onPointerDown={(e) => (pointer.current = e.pointerType)}
-          onClick={onClick}
-          onKeyDown={onKeyDown}
-          onBlur={() => setOpen(false)}
+    <section className="sig-wrap pt-20 pb-16 flex justify-center overflow-x-clip" aria-label="Signature">
+      <div
+        ref={ref}
+        role="button"
+        tabIndex={0}
+        aria-expanded={open}
+        aria-label="Toggle signature"
+        onPointerDown={(e) => {
+          pointer.current = e.pointerType;
+        }}
+        onClick={onClick}
+        onKeyDown={onKeyDown}
+        className={`sig-card relative p-7 bg-inset border border-line rounded-[12px] flex items-center justify-center transition-[border-color,box-shadow] duration-300 ${
+          open ? 'border-amber shadow-[0_0_24px_-6px_var(--glow)]' : ''
+        }`}
+      >
+        <span
+          className="sig-top absolute left-1/2 -translate-x-1/2 -top-2 font-mono text-[10px] uppercase bg-panel px-2 tracking-[0.08em] whitespace-nowrap"
+          style={{ color: 'var(--amber)' }}
         >
-          <div className="sig-border absolute inset-0 border-2 rounded-[10px]" style={{ borderColor: 'var(--amber)' }} />
-          <div className="text-center">
-            <div className="sig-logo mx-auto mb-1">
-              <svg viewBox="0 0 200 74" className={`sig-svg${drawn ? ' is-drawn' : ''}`} aria-hidden="true">
+          {site.name}
+        </span>
 
-                <path className="sig-v" d="M14 16 L14 58 M14 37 L40 37 M40 16 L40 58" pathLength="100" />
-                <path className="sig-bar" d="M40 16 H194" pathLength="100" />
-                <text className="sig-rest" x="52" y="58" textLength="136" lengthAdjust="spacing">
-                  {site.name.slice(1)}
+        <div className="sig-content flex flex-col items-center justify-center gap-1.5 min-w-[200px]">
+          <div className="flex flex-col items-center gap-2">
+            <div className="sig-draw-wrap h-14 w-full flex items-center justify-center" aria-hidden="true">
+              <svg viewBox="0 0 200 45" className="h-10 w-auto overflow-visible select-none pointer-events-none">
+                <text
+                  x="50%"
+                  y="50%"
+                  dominantBaseline="central"
+                  textAnchor="middle"
+                  className={`sig-text font-serif italic text-2xl tracking-wide fill-none stroke-amber transition-all duration-1000 ${
+                    drawn ? 'sig-drawn' : ''
+                  }`}
+                  style={{
+                    strokeWidth: '1.5px',
+                    strokeDasharray: '400',
+                    strokeDashoffset: drawn ? '0' : '400',
+                  }}
+                >
+                  {site.name}
                 </text>
               </svg>
             </div>

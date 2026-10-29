@@ -40,6 +40,8 @@ export default function SheetCard() {
   const [time, setTime] = useState(siteClock);
   const [cls, setCls] = useState(0);
 
+  const roleLabel = lang === 'tr' ? site.roleTr : site.roleEn;
+  const locationLabel = lang === 'tr' ? site.locationTr : site.locationEn;
   const classesList = [null, ...(dict.card.classes || site.content.classes)];
 
   useEffect(() => pausableInterval(() => setTime(siteClock()), 1000), []);
@@ -82,11 +84,11 @@ export default function SheetCard() {
             title={dict.card.classTitle}
             className="touch-hit text-left cursor-pointer hover:text-amber transition-colors"
           >
-            {classesList[cls] ?? site.role} <span className="text-dim">↻</span>
+            {classesList[cls] ?? roleLabel} <span className="text-dim">↻</span>
           </button>
         </Row>
         <Row k={dict.card.location}>
-          {site.location} <span className="text-dim">· {time} {gmtLabel()}</span>
+          {locationLabel} <span className="text-dim">· {time} {gmtLabel()}</span>
         </Row>
         <Row k={dict.card.mainQuest}>{mainStack}</Row>
         <Row k={dict.card.sideQuest}>{learning}</Row>

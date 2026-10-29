@@ -11,14 +11,13 @@ export const getInitialLang = () => {
       return 'tr';
     }
   } catch {
-
+    // Ignore storage errors
   }
-  return 'en';
+  return 'tr';
 };
 
 export const DICTIONARY = {
   tr: {
-
     nav: {
       about: 'hakkimda.js',
       projects: 'projeler/',
@@ -37,14 +36,13 @@ export const DICTIONARY = {
       ariaLabel: `Merhaba, ben ${site.name}.`,
       hi: 'Merhaba, ben',
       phrases: [
-        'Tutkuyla kod yazıyorum.',
-        'Modern web uygulamaları geliştiriyorum.',
-        'Gece yarısı buglarını avlıyorum.',
-        'CSS ve yaratıcı kodlamayla oynuyorum.',
-        'Full-stack çözümler üretiyorum.',
+        'Full-stack web uygulamaları geliştiriyorum.',
+        'Modern ve performanslı sistemler tasarlıyorum.',
+        'Açık kaynak teknolojiler üzerine çalışıyorum.',
+        'Ölçeklenebilir çözümler inşa ediyorum.',
       ],
-      intro: 'Modern web teknolojileri, interaktif arayüzler ve performanslı full-stack çözümler geliştirmeyi seviyorum.',
-      note: 'varsayılan olarak odaklanmış. yine de bir merhaba de →',
+      intro: 'Modern web teknolojileri ve ölçeklenebilir yazılım çözümleri geliştiriyorum.',
+      note: 'Yeni projeler ve iş birlikleri için iletişime geçebilirsiniz.',
       viewProjects: 'projeleri incele',
       contactMe: 'iletişime geç',
       scrollToContinue: 'Devam etmek için kaydır',
@@ -54,41 +52,39 @@ export const DICTIONARY = {
     card: {
       statusAuto: '· oto',
       classTitle: 'Rolü değiştirmek için tıkla',
-      classes: ['Yazılım Geliştirici', 'Hata Avcısı', 'Arayüz Büyücüsü', 'Kahve Tutkunu', 'Gece Kodlayıcısı (lvl 99)'],
+      classes: ['Full-Stack Geliştirici', 'Yazılım Mühendisi', 'Arayüz Geliştirici', 'Backend Geliştirici'],
       location: 'konum',
-      mainQuest: 'ana görev',
-      sideQuest: 'yan görev',
-      socialBattery: 'sosyal batarya',
-      personality: 'karakter kilidi',
-      personalityHint: '6+ aylık arkadaşlık gerektirir',
-      sayHi: '$ merhaba de',
+      mainQuest: 'ana odak',
+      sideQuest: 'öğrenilenler',
+      socialBattery: 'durum',
+      personality: 'profil',
+      personalityHint: 'henox.dev',
+      sayHi: '$ selam ver',
       sayHiReplies: [
-        'merhaba! sayfama hoş geldin :)',
-        'selam! projeleri kurcalamaktan çekinme.',
-        'hey! bugün kodlar tertemiz akıyor.',
-        'merhaba yabancı. kahveni aldın mı?',
-        'bataryam azalıyor ama sana her zaman vaktim var!',
-        'birlikte harika şeyler inşa edelim.',
+        'Merhaba! Sayfama hoş geldiniz.',
+        'Selam! Projelerimi incelemekten çekinmeyin.',
+        'Yeni projeler ve fikirler için iletişime geçebilirsiniz.',
+        'Birlikte değer katan projeler inşa edebiliriz.',
       ],
-      sleepingNote: 'zzz... batarya tükendi',
+      sleepingNote: 'Şu an çevrimdışı.',
     },
 
     terminal: {
-      promptNote: 'bir komut yazın veya aşağıdaki hazır sorulardan birine tıklayın',
-      whoami: `${site.id} - ${site.role.toLowerCase()}, ${site.location}`,
-      mood: 'odaklanmış, meraklı, temiz ve eğlenceli projeler üreten.',
-      teaLine: 'kahve && çay. üretkenliğin yakıtı.',
+      promptNote: 'bir komut yazın veya aşağıdaki hazır seçeneklerden birine tıklayın',
+      whoami: `${site.id} - ${site.roleTr.toLowerCase()}, ${site.locationTr}`,
+      mood: 'Üretken, odaklanmış ve yeni teknolojileri araştıran.',
+      teaLine: 'Sürekli öğrenme ve temiz kod odaklı.',
       quick: [
         ['kimsin sen?', 'whoami'],
-        ['modun nasıl?', 'cat mood.txt'],
+        ['durumun nasıl?', 'cat mood.txt'],
         ['neler kullanıyorsun?', 'cat stack.txt'],
         ['projeleri göster', 'cd projects'],
         ['seninle çalışabilir miyim?', `sudo hire ${site.id}`],
-        ['beni şaşırt', 'theme random'],
+        ['rastgele tema', 'theme random'],
       ],
       help: `help | ls | cat <dosya> | cd <sayfa> | whoami | date | battery | theme | clear`,
       helpHint: `dene: sudo hire ${site.id}, ya da theme list`,
-      hireResp: `Harika! Birlikte çalışmak için iletişim formundan mesaj bırakabilir veya ${site.email} adresine yazabilirsin.`,
+      hireResp: `Harika! Birlikte çalışmak veya iletişime geçmek için ${site.email} adresine yazabilirsiniz.`,
     },
 
     home: {
@@ -97,20 +93,20 @@ export const DICTIONARY = {
       aboutTitle: 'Hakkımda',
       moreAboutMe: 'Hakkımda daha fazlası',
       labTitle: 'Laboratuvar',
-      labDesc: 'Sırf nasıl çalıştığını görmek için yaptığım küçük oyunlar ve deneysel oyuncaklar.',
+      labDesc: 'Deneysel arayüz çalışmaları ve prototipler.',
       openLab: 'Laboratuvarı aç',
     },
 
     about: {
-      subtitle: 'hakkımda birkaç detay',
-      yearsCoding: 'yıldır kodluyor',
-      commitsLife: 'hayat günlüğünde kayıt',
+      subtitle: 'hakkımda detaylar ve teknoloji yığını',
+      yearsCoding: 'yıldır yazılım geliştiriyor',
+      commitsLife: 'geliştirme günlüğü kaydı',
       toolsStack: 'kullanılan teknoloji & araç',
       readmeTitle: 'beni-oku.md',
-      readmeContent: `${startYear}'den beri tutkuyla kodluyorum. En sevdiğim teknoloji yığını ${mainStack} ve şu sıralar ${learning} üzerine odaklanıyorum. Hızlı, interaktif ve modern web deneyimleri inşa etmeyi seviyorum.`,
+      readmeContent: `${startYear}'den beri yazılım geliştiriyorum. Tercih ettiğim teknoloji yığını ${mainStack} ve şu sıralar ${learning} üzerine odaklanıyorum. Modern, performanslı ve ölçeklenebilir web uygulamaları inşa ediyorum.`,
       logTitle: 'günlük.sh',
       skillsTitle: 'yetenekler.js',
-      funFact: 'Gece yarılarına kadar kod yazıp asla sıkılmamak',
+      funFact: 'Performans optimizasyonu ve temiz mimari üzerine odaklanma',
       coffeeOrTea: 'kahve',
     },
 
@@ -122,13 +118,13 @@ export const DICTIONARY = {
       checking: 'Kontrol ediliyor…',
       searchPlaceholder: 'projelerde filtrele veya ara…',
       all: 'tümü',
-      shelfView: 'kaset görünümü',
+      shelfView: 'kart görünümü',
       listView: 'liste görünümü',
       stars: 'yıldız',
     },
 
     lab: {
-      subtitle: 'kurcalanacak deneysel şeyler: birini seç, sadece o çalışsın',
+      subtitle: 'deneysel çalışmalar ve arayüz prototipleri',
       matches: 'sonuç eşleşti',
       searchPlaceholder: 'ara…',
       random: 'Rastgele',
@@ -136,8 +132,8 @@ export const DICTIONARY = {
     },
 
     contact: {
-      subtitle: 'tek satırlık bir not bile yeter, hepsini okuyorum',
-      placeholder: 'Bu sayfa veya projeler hakkında bir şeyler yazın...',
+      subtitle: 'yeni projeler ve iş birlikleri için bana ulaşabilirsiniz',
+      placeholder: 'Mesajınızı buraya yazabilirsiniz...',
       send: 'Mesaj Gönder',
       copied: 'Kopyalandı!',
       copyEmail: 'E-postayı Kopyala',
@@ -146,12 +142,11 @@ export const DICTIONARY = {
     },
 
     footer: {
-      handcrafted: 'şablon değil, el emeği',
-      copy: `${site.location}'da özenle geliştirildi · © ${site.year} ${site.id}`,
+      handcrafted: 'modern & minimalist portfolyo',
+      copy: `${site.locationTr}'da geliştirildi · © ${site.year} ${site.id}`,
     },
   },
   en: {
-
     nav: {
       about: 'about.js',
       projects: 'projects/',
@@ -170,14 +165,13 @@ export const DICTIONARY = {
       ariaLabel: `Hi, I'm ${site.name}.`,
       hi: "Hi, I'm",
       phrases: [
-        'I code with passion.',
-        'I craft modern web apps.',
-        'I fix 3am bugs.',
-        'I play with CSS & creative code.',
-        'I build full-stack solutions.',
+        'Building full-stack web applications.',
+        'Designing modern, high-performance systems.',
+        'Working on open source technologies.',
+        'Crafting scalable software solutions.',
       ],
-      intro: 'I love crafting clean web experiences, building playful interactive interfaces, and exploring new technologies.',
-      note: 'focused by default. say hi anyway →',
+      intro: 'Developing modern web technologies and scalable software solutions.',
+      note: 'Open to new projects and collaboration.',
       viewProjects: 'view projects',
       contactMe: 'contact me',
       scrollToContinue: 'Scroll to continue',
@@ -187,30 +181,28 @@ export const DICTIONARY = {
     card: {
       statusAuto: '· auto',
       classTitle: 'Click to change class',
-      classes: ['Software Developer', 'Bug Hunter', 'CSS Wizard', 'Coffee Lover', 'Night Owl (lvl 99)'],
+      classes: ['Full-Stack Developer', 'Software Engineer', 'Frontend Developer', 'Backend Developer'],
       location: 'location',
-      mainQuest: 'main quest',
-      sideQuest: 'side quest',
-      socialBattery: 'social battery',
-      personality: 'personality unlocked',
-      personalityHint: 'needs 6+ months of friendship',
+      mainQuest: 'main focus',
+      sideQuest: 'currently learning',
+      socialBattery: 'status',
+      personality: 'profile',
+      personalityHint: 'henox.dev',
       sayHi: '$ say hi',
       sayHiReplies: [
-        'hi! thanks for stopping by :)',
-        'hey there! feel free to poke around.',
-        'hello! code is compiling cleanly today.',
-        'hey stranger. grabbed your coffee yet?',
-        'social battery dropping, but always got time for you!',
-        "let's build something cool together.",
+        'Hello! Welcome to my portfolio.',
+        'Feel free to explore my open source projects.',
+        'Always open to interesting ideas and collaborations.',
+        "Let's build something impactful together.",
       ],
-      sleepingNote: 'zzz... social battery: 0%',
+      sleepingNote: 'Currently offline.',
     },
 
     terminal: {
-      promptNote: 'type a command, or just click a question below',
-      whoami: `${site.id} - ${site.role.toLowerCase()}, ${site.location}`,
-      mood: 'chill, curious, shipping clean and playful stuff.',
-      teaLine: 'coffee && tea. fuel for thought.',
+      promptNote: 'type a command, or click an option below',
+      whoami: `${site.id} - ${site.roleEn.toLowerCase()}, ${site.locationEn}`,
+      mood: 'Focused, productive, and exploring modern technologies.',
+      teaLine: 'Continuous learning and clean code.',
       quick: [
         ['who are you?', 'whoami'],
         ['your mood?', 'cat mood.txt'],
@@ -221,7 +213,7 @@ export const DICTIONARY = {
       ],
       help: 'help | ls | cat <file> | cd <tab> | whoami | date | battery | theme | clear',
       helpHint: `try: sudo hire ${site.id}, or theme list`,
-      hireResp: `Awesome! Drop a note in contact.sh or shoot an email to ${site.email}.`,
+      hireResp: `Awesome! To collaborate or discuss a project, feel free to write to ${site.email}.`,
     },
 
     home: {
@@ -230,20 +222,20 @@ export const DICTIONARY = {
       aboutTitle: 'About Me',
       moreAboutMe: 'More about me',
       labTitle: 'Lab Experiments',
-      labDesc: 'Tiny games and toys I build just to see if they work.',
+      labDesc: 'Experimental interface components and prototypes.',
       openLab: 'Open the lab',
     },
 
     about: {
-      subtitle: 'a few things about me',
-      yearsCoding: 'years coding',
-      commitsLife: 'commits in life.log',
-      toolsStack: 'tools in the stack',
+      subtitle: 'background details and technology stack',
+      yearsCoding: 'years developing software',
+      commitsLife: 'commits in activity log',
+      toolsStack: 'technologies & tools in stack',
       readmeTitle: 'readme.md',
-      readmeContent: `Coding since ${startYear}. Favorite stack is ${mainStack}, and I'm currently exploring ${learning}. Focused on creating fast, interactive, and playful web applications.`,
+      readmeContent: `Coding since ${startYear}. Favorite stack is ${mainStack}, and I'm currently exploring ${learning}. Focused on creating fast, interactive, and performant web applications.`,
       logTitle: 'log.sh',
       skillsTitle: 'skills.js',
-      funFact: 'debugging CSS & React state machines until dawn without getting bored',
+      funFact: 'Focusing on performance optimization and clean architecture',
       coffeeOrTea: 'coffee',
     },
 
@@ -255,13 +247,13 @@ export const DICTIONARY = {
       checking: 'Checking deployment…',
       searchPlaceholder: 'filter or search projects…',
       all: 'all',
-      shelfView: 'cartridge shelf',
+      shelfView: 'card view',
       listView: 'directory listing',
       stars: 'stars',
     },
 
     lab: {
-      subtitle: 'things to poke at: pick one, only that one runs',
+      subtitle: 'experimental works and UI prototypes',
       matches: 'match',
       searchPlaceholder: 'search…',
       random: 'Random',
@@ -269,8 +261,8 @@ export const DICTIONARY = {
     },
 
     contact: {
-      subtitle: 'even a one-line note is fine, I read everything',
-      placeholder: 'Write something about this page or projects...',
+      subtitle: 'feel free to reach out for new projects and collaborations',
+      placeholder: 'Write your message here...',
       send: 'Send Message',
       copied: 'Copied!',
       copyEmail: 'Copy Email',
@@ -279,9 +271,8 @@ export const DICTIONARY = {
     },
 
     footer: {
-      handcrafted: 'handcrafted, not templated',
-      copy: `crafted with care in ${site.location} · © ${site.year} ${site.id}`,
+      handcrafted: 'modern & minimalist portfolio',
+      copy: `crafted with care in ${site.locationEn} · © ${site.year} ${site.id}`,
     },
   },
 };
-

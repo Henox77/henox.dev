@@ -9,11 +9,11 @@ import { has, motionSleep as sleep, prefersReducedMotion } from '../../../lib/en
 import { observeOnce } from '../../../lib/observe.js';
 import { useStatus } from '../../../lib/status.js';
 import { siteDateTime } from '../../../lib/siteTime.js';
-import { BATTERY_CELLS, getSocial, levelOf, unlockKonami } from '../../../lib/social.js';
+import { BATTERY_CELLS, levelOf, unlockKonami } from '../../../lib/social.js';
 import { useLang } from '../../../context/LangContext.jsx';
 import './Terminal.css';
 
-const { id, role, location } = site;
+const { id } = site;
 const HIRE = `hire ${id}`;
 const TABS = PAGES.map((p) => p.id);
 
