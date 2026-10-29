@@ -1,13 +1,12 @@
-import { Suspense, useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import SectionHead from '../components/ui/SectionHead.jsx';
-import { projects, arts, tags } from './index.js';
+import { useGithubRepos } from '../lib/github.js';
 import { slugOf } from './slug.js';
 import { SCROLL_MT_SUB, SECTION, WRAP } from '../config/ui.js';
 import { labelOf } from '../config/pages.js';
-import { storageKey } from '../config/site.js';
+import { site, storageKey } from '../config/site.js';
 import { clamp } from '../lib/math.js';
-import { BASE } from '../lib/paths.js';
-import { sessionGet, sessionSet, storageGet, storageSet } from '../lib/storage.js';
+import { storageGet, storageSet } from '../lib/storage.js';
 import { canHover, prefersReducedMotion } from '../lib/env.js';
 import { isSlashShortcut } from '../lib/dom.js';
 import { useLang } from '../context/LangContext.jsx';
@@ -17,26 +16,18 @@ const MODE_KEY = storageKey('projects-mode');
 const SEEN_KEY = storageKey('projects-seen');
 const LS_DEFAULT_MIN = 12;
 
-const extOf = (p) => p.file.slice(p.file.lastIndexOf('.'));
-const repoPathOf = (p) => new URL(p.href).pathname.replace(/^\//, '');
-const checkPages = async (p, signal) => {
-  const repo = repoPathOf(p);
-  const key = `pages:${repo}`;
-  const hit = sessionGet(key);
-  if (hit) return hit;
-  const r = await fetch(`https://api.github.com/repos/${repo}`, { signal, headers: { Accept: 'application/vnd.github+json' } });
-  if (r.status !== 404 && !r.ok) return 'unknown';
-  const v = r.status !== 404 && (await r.json()).has_pages ? 'live' : 'off';
-  sessionSet(key, v);
-  return v;
+const extOf = (p) => {
+  if (p.language) {
+    const l = p.language.toUpperCase();
+    if (l === 'TYPESCRIPT') return 'TS';
+    if (l === 'JAVASCRIPT') return 'JS';
+    if (l === 'PYTHON') return 'PY';
+    return l.slice(0, 4);
+  }
+  return 'GIT';
 };
-const DEPLOY = {
-  live: { led: 'on', title: 'live on GitHub Pages', label: 'Deployed' },
-  off: { led: 'off', title: 'not deployed', label: 'Not deployed' },
-  unknown: { led: 'idle', title: 'checking…', label: 'Checking deployment' },
-};
-const DEPLOY_CHECKING = { led: 'check', title: 'checking…', label: 'Checking deployment' };
-const camel = (s) => s.replace(/[^a-z0-9]+(.)?/gi, (_, c) => (c ? c.toUpperCase() : ''));
+
+const camel = (s) => (s || '').replace(/[^a-z0-9]+(.)?/gi, (_, c) => (c ? c.toUpperCase() : ''));
 
 function Star({ className }) {
   return (
@@ -55,13 +46,13 @@ const ArrowIcon = () => (
 function Readout({ p }) {
   const { lang } = useLang();
   const desc = lang === 'tr' && p.descTr ? p.descTr : p.desc;
-  const rows = [...(p.facts ?? []), ['repo', repoPathOf(p)]];
+  const rows = [...(p.facts ?? []), ['repo', `${site.githubUser}/${p.name}`]];
   const line = (i) => ({ '--i': i });
   return (
-    <div className="proj-code" role="group" aria-label={`Details of ${p.file}`}>
+    <div className="proj-code" role="group" aria-label={`Details of ${p.name}`}>
       <p className="c" style={line(0)}>{desc}</p>
       <p style={line(1)}>
-        <span className="k">const</span> <span className="n">{camel(slugOf(p))}</span> {'= {'}
+        <span className="k">const</span> <span className="n">{camel(p.name)}</span> {'= {'}
       </p>
       {rows.map(([label, value], i) => (
         <p key={label} className="i" style={line(i + 2)}>
@@ -91,15 +82,15 @@ function stageLeave(e) {
 
 export default function Projects() {
   const { dict, lang } = useLang();
+  const { repos } = useGithubRepos();
   const [picked, setPicked] = useState(() => location.hash.slice(1));
-  const [shotFor, setShotFor] = useState(null);
-  const [brokenShots, setBrokenShots] = useState({});
   const [q, setQ] = useState('');
   const [tag, setTag] = useState('');
-  const [status, setStatus] = useState({});
+  const [copied, setCopied] = useState(false);
+
   const [mode, setModeState] = useState(() => {
     const saved = storageGet(MODE_KEY);
-    return saved === 'shelf' || saved === 'ls' ? saved : projects.length > LS_DEFAULT_MIN ? 'ls' : 'shelf';
+    return saved === 'shelf' || saved === 'ls' ? saved : repos.length > LS_DEFAULT_MIN ? 'ls' : 'shelf';
   });
   const setMode = (m) => {
     setModeState(m);
@@ -120,23 +111,21 @@ export default function Projects() {
   const rail = useRef(null);
   const consoleRef = useRef(null);
 
+  const tags = useMemo(() => {
+    return [...new Set(repos.flatMap((p) => p.tags ?? []))].sort();
+  }, [repos]);
+
   const list = useMemo(() => {
     const s = q.trim().toLowerCase();
-    return projects.filter(
-      (x) =>
-        (!tag || x.tags?.includes(tag)) &&
-        (!s || [x.file, x.desc, ...(x.tags ?? [])].join(' ').toLowerCase().includes(s)),
+    return repos.filter((x) =>
+      (!tag || x.tags?.includes(tag) || x.language?.toLowerCase() === tag) &&
+      (!s || [x.name, x.desc, x.descTr, ...(x.tags ?? [])].join(' ').toLowerCase().includes(s))
     );
-  }, [q, tag]);
+  }, [repos, q, tag]);
 
-  const p = list.find((x) => slugOf(x) === picked) ?? list[0] ?? projects[0];
+  const p = list.find((x) => slugOf(x) === picked) ?? list[0] ?? repos[0];
   const slug = p ? slugOf(p) : '';
   const at = list.findIndex((x) => slugOf(x) === slug);
-  const Art = arts[slug];
-  const st = status[slug];
-  const dep = DEPLOY[st] ?? DEPLOY_CHECKING;
-  const hasShot = Boolean(p?.shot) && !brokenShots[slug];
-  const showShot = hasShot && shotFor === slug;
 
   useEffect(() => {
     if (!slug) return;
@@ -167,24 +156,6 @@ export default function Projects() {
     storageSet(SEEN_KEY, JSON.stringify(seen));
   }, [seen]);
 
-  useEffect(() => {
-    let stale = false;
-    const ctl = new AbortController();
-    const timer = setTimeout(() => ctl.abort(), 6000);
-    projects.forEach((x) => {
-      const k = slugOf(x);
-      const done = (v) => !stale && setStatus((s) => ({ ...s, [k]: v }));
-      checkPages(x, ctl.signal)
-        .then(done)
-        .catch(() => done('unknown'));
-    });
-    return () => {
-      stale = true;
-      clearTimeout(timer);
-      ctl.abort();
-    };
-  }, []);
-
   const move = (e, i) => {
     if (e.altKey || e.ctrlKey || e.metaKey) return;
     if (e.key === 'Enter') {
@@ -201,60 +172,64 @@ export default function Projects() {
       Home: 0,
       End: last,
     }[e.key];
-    if (to == null) return;
+    if (to === undefined) return;
     e.preventDefault();
-    const arrow = e.key.startsWith('Arrow');
-    if (arrow && e.repeat && (to < 0 || to > last)) return;
-    const next = list[arrow ? (to + list.length) % list.length : clamp(to, 0, last)];
-    setPicked(slugOf(next));
-    tabs.current[slugOf(next)]?.focus({ preventScroll: true });
+    const next = clamp(to, 0, last);
+    const nextSlug = slugOf(list[next]);
+    setPicked(nextSlug);
+    tabs.current[nextSlug]?.focus();
   };
-  const sectionKey = (e) => {
-    if (!isSlashShortcut(e)) return;
-    e.preventDefault();
-    filterRef.current?.focus();
+
+  const pick = (s) => {
+    setPicked(s);
   };
-  const filterKey = (e) => {
-    if (e.nativeEvent.isComposing) return;
-    const focusPicked = () => tabs.current[slug]?.focus({ preventScroll: true });
-    if (e.key === 'ArrowDown' || (e.key === 'Enter' && list.length)) {
-      e.preventDefault();
-      focusPicked();
-    } else if (e.key === 'Escape') {
-      e.preventDefault();
-      if (q) setQ('');
-      else focusPicked();
-    }
+
+  const nudge = (dir) => {
+    if (at === -1) return;
+    const next = clamp(at + dir, 0, list.length - 1);
+    const nextSlug = slugOf(list[next]);
+    pick(nextSlug);
+    tabs.current[nextSlug]?.focus();
   };
+
   const resetFilters = () => {
     setQ('');
     setTag('');
+    filterRef.current?.focus();
   };
-  const pick = (k) => {
-    setPicked(k);
-    const el = consoleRef.current;
-    const navH = document.querySelector('#root > nav')?.offsetHeight ?? 0;
-    if (el && el.getBoundingClientRect().top < navH) {
-      el.scrollIntoView({ block: 'start', behavior: prefersReducedMotion() ? 'auto' : 'smooth' });
+
+  const filterKey = (e) => {
+    if (e.key === 'Escape') {
+      e.preventDefault();
+      setQ('');
+      return;
+    }
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      if (!list.length) return;
+      const first = slugOf(list[0]);
+      setPicked(first);
+      tabs.current[first]?.focus();
     }
   };
-  const nudge = (d) => rail.current?.scrollBy({ left: d * rail.current.clientWidth * 0.8, behavior: 'smooth' });
 
-  if (!p) {
-    return (
-      <section id="projects" className={SECTION}>
-        <div className={WRAP}>
-          <SectionHead num="01" title={labelOf('projects')} level={1} />
-          <p className="proj-empty">{'nothing here yet'}</p>
-        </div>
-      </section>
-    );
-  }
+  const sectionKey = (e) => {
+    if (isSlashShortcut(e)) {
+      e.preventDefault();
+      filterRef.current?.focus();
+      filterRef.current?.select();
+    }
+  };
 
-  const played = projects.filter((x) => seenSet.has(slugOf(x))).length;
-  const cleared = played === projects.length;
+  const copyCloneCmd = () => {
+    if (!p) return;
+    navigator.clipboard.writeText(`git clone ${p.href}.git`);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
 
-  const thumbs = list.some((x) => x.shot && !brokenShots[slugOf(x)]);
+  const played = repos.filter((x) => seenSet.has(slugOf(x))).length;
+  const cleared = played === repos.length && repos.length > 0;
 
   const cart = (x, i) => {
     const k = slugOf(x);
@@ -265,12 +240,11 @@ export default function Projects() {
       type: 'button',
       role: 'tab',
       id: `proj-tab-${k}`,
-      'aria-label': x.file,
+      'aria-label': x.name,
       'aria-selected': k === slug,
       'aria-controls': 'proj-panel',
       tabIndex: k === slug ? 0 : -1,
       style: { '--c': x.color },
-      'data-off': status[k] === 'off' || undefined,
       'data-seen': (k !== slug && seenSet.has(k)) || undefined,
       onClick: () => pick(k),
       onKeyDown: (e) => move(e, i),
@@ -278,24 +252,11 @@ export default function Projects() {
     return mode === 'ls' ? (
       <button key={k} {...common} className="proj-row">
         <span className="proj-row-n" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
-        {thumbs && (
-          <span className="proj-row-thumb" aria-hidden="true">
-            {x.shot && !brokenShots[k] && (
-              <img
-                src={`${BASE}previews/${k}.png`}
-                alt=""
-                loading="lazy"
-                decoding="async"
-                onError={() => setBrokenShots((b) => ({ ...b, [k]: true }))}
-              />
-            )}
-          </span>
-        )}
-        <span className="proj-row-f">{x.file}</span>
-        <span className="proj-row-d">{x.desc}</span>
+        <span className="proj-row-f font-bold">{x.name}</span>
+        <span className="proj-row-d">{lang === 'tr' && x.descTr ? x.descTr : x.desc}</span>
         <span className="proj-row-t" aria-hidden="true">
-          {seenSet.has(k) && <Star className="proj-row-star" />}
-          {x.tags?.join(' ')}
+          {x.stars > 0 && <span className="text-amber mr-2">★ {x.stars}</span>}
+          <span>{x.language}</span>
         </span>
       </button>
     ) : (
@@ -303,7 +264,7 @@ export default function Projects() {
         <span className="proj-cart-grip" aria-hidden="true" />
         <span className="proj-cart-label" aria-hidden="true">
           <span className="proj-cart-ext">{extOf(x)}</span>
-          <span className="proj-cart-name">{k}</span>
+          <span className="proj-cart-name">{x.name}</span>
         </span>
         <span className="proj-cart-pins" aria-hidden="true" />
       </button>
@@ -314,77 +275,133 @@ export default function Projects() {
     <section id="projects" className={SECTION} onKeyDown={sectionKey}>
       <div className={WRAP}>
         <SectionHead num="01" title={labelOf('projects')} level={1} />
-        <p className="-mt-6 mb-8 text-dim text-[14px] max-w-[60ch]">
-          {dict.projects.subtitle}
-        </p>
+        <div className="flex items-center justify-between -mt-6 mb-8 gap-4 flex-wrap">
+          <p className="text-dim text-[14px] max-w-[60ch]">
+            {dict.projects.subtitle}
+          </p>
+          <a
+            href={`https://github.com/${site.githubUser}?tab=repositories`}
+            target="_blank"
+            rel="noreferrer"
+            className="text-amber font-mono text-xs flex items-center gap-1.5 hover:underline"
+          >
+            <span>GitHub Profile ({site.githubUser})</span> →
+          </a>
+        </div>
 
-        <div id="proj-panel" ref={consoleRef} role="tabpanel" aria-labelledby={`proj-tab-${slug}`} className={`proj-console ${SCROLL_MT_SUB}`}>
-          <div key={slug} className="proj-console-body">
-            <div className="proj-screen">
-              <div className="proj-art" data-off={st === 'off' || undefined} style={{ color: p.color }} onPointerMove={stageMove} onPointerLeave={stageLeave}>
-                {st === 'off' && (
-                  <div className="proj-static" aria-hidden="true">
-                    <span>NO SIGNAL</span>
-                  </div>
-                )}
-                <div className="proj-crt">
-                  {showShot ? (
-                    <img
-                      src={`${BASE}previews/${slug}.png`}
-                      alt={`Screenshot of ${p.file}`}
-                      className="proj-shot"
-                      onError={() => setBrokenShots((b) => ({ ...b, [slug]: true }))}
-                    />
-                  ) : (
-                    <>
-                      <span className="proj-ghost" style={{ '--n': slug.length }} aria-hidden="true">
-                        {slug}
-                      </span>
-                      {Art && (
-                        <div className="proj-art-inner" aria-hidden="true">
-                          <Suspense fallback={null}><Art /></Suspense>
+        {p && (
+          <div id="proj-panel" ref={consoleRef} role="tabpanel" aria-labelledby={`proj-tab-${slug}`} className={`proj-console ${SCROLL_MT_SUB}`}>
+            <div key={slug} className="proj-console-body">
+              <div className="proj-screen">
+                <div className="proj-art" style={{ color: p.color }} onPointerMove={stageMove} onPointerLeave={stageLeave}>
+                  <div className="proj-crt p-5 sm:p-7 flex flex-col justify-between h-full bg-panel/95">
+                    <div className="flex items-center justify-between pb-3 border-b border-line">
+                      <div className="flex items-center gap-2">
+                        <span className="w-2.5 h-2.5 rounded-full bg-red-500/80" />
+                        <span className="w-2.5 h-2.5 rounded-full bg-yellow-500/80" />
+                        <span className="w-2.5 h-2.5 rounded-full bg-green-500/80" />
+                        <span className="ml-2 font-mono text-xs text-dim">$ gh repo view {site.githubUser}/{p.name}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        {p.stars > 0 && (
+                          <span className="font-mono text-xs px-2 py-0.5 rounded bg-amber/10 border border-amber/30 text-amber flex items-center gap-1">
+                            ★ {p.stars}
+                          </span>
+                        )}
+                        <span className="font-mono text-xs px-2 py-0.5 rounded border border-line text-dim">public</span>
+                      </div>
+                    </div>
+
+                    <div className="my-auto py-3">
+                      <div className="flex items-center gap-3 mb-2">
+                        <svg className="w-6 h-6 text-amber flex-none" viewBox="0 0 16 16" fill="currentColor">
+                          <path d="M2 2.5A2.5 2.5 0 0 1 4.5 0h8.75a.75.75 0 0 1 .75.75v12.5a.75.75 0 0 1-.75.75h-2.5a.75.75 0 0 1 0-1.5h1.75v-2h-8a1 1 0 0 0-.714 1.7.75.75 0 1 1-1.072 1.05A2.495 2.495 0 0 1 2 11.5Zm10.5-1h-8a1 1 0 0 0-1 1v6.708A2.486 2.486 0 0 1 4.5 9h8ZM5 12.25a.25.25 0 0 1 .25-.25h3.5a.25.25 0 0 1 .25.25v3.25a.25.25 0 0 1-.4.2l-1.45-1.087a.249.249 0 0 0-.3 0L5.4 15.7a.25.25 0 0 1-.4-.2Z" />
+                        </svg>
+                        <h3 className="font-mono text-xl sm:text-2xl font-bold text-ink">
+                          {p.name}
+                        </h3>
+                      </div>
+
+                      <p className="text-dim text-sm sm:text-base leading-relaxed font-sans max-w-xl">
+                        {lang === 'tr' && p.descTr ? p.descTr : p.desc}
+                      </p>
+
+                      {p.tags?.length > 0 && (
+                        <div className="flex flex-wrap gap-1.5 mt-3">
+                          {p.tags.slice(0, 6).map((t) => (
+                            <span key={t} className="text-[11px] font-mono px-2 py-0.5 rounded bg-line/40 text-dim">
+                              #{t}
+                            </span>
+                          ))}
                         </div>
                       )}
-                    </>
-                  )}
+
+                      <div className="mt-4 p-2.5 rounded bg-black/40 border border-line font-mono text-xs text-amber flex items-center justify-between">
+                        <code>$ git clone {p.href}.git</code>
+                        <button
+                          type="button"
+                          onClick={copyCloneCmd}
+                          className="text-[11px] text-dim hover:text-amber transition-colors px-1.5 py-0.5 rounded border border-line"
+                        >
+                          {copied ? 'copied!' : 'copy'}
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center justify-between pt-3 border-t border-line font-mono text-xs">
+                      <div className="flex items-center gap-3">
+                        {p.language && (
+                          <span className="flex items-center gap-1.5 text-ink">
+                            <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: p.color }} />
+                            {p.language}
+                          </span>
+                        )}
+                        {p.forks > 0 && (
+                          <span className="text-dim">⑂ {p.forks}</span>
+                        )}
+                      </div>
+                      <a
+                        href={p.href}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="text-amber hover:underline flex items-center gap-1 font-mono text-xs"
+                      >
+                        {lang === 'tr' ? 'GitHub’da Aç' : 'Open on GitHub'} ↗
+                      </a>
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <div className="proj-info">
-              <div className="flex items-center justify-between gap-3 min-h-8">
-                <span className="flex items-center gap-2.5 font-mono text-[13px] text-ink min-w-0">
-                  <span
-                    className="proj-led"
-                    data-state={dep.led}
-                    title={dep.title}
-                    role="img"
-                    aria-label={dep.label}
-                  />
-                  <span className="truncate">{p.file}</span>
-                </span>
-                {hasShot && (
-                  <span className="proj-switch" role="group" aria-label="Preview type">
-                    <button type="button" aria-pressed={!showShot} onClick={() => setShotFor(null)}>
-                      art
-                    </button>
-                    <button type="button" aria-pressed={showShot} onClick={() => setShotFor(slug)}>
-                      screenshot
-                    </button>
+              <div className="proj-info">
+                <div className="flex items-center justify-between gap-3 min-h-8">
+                  <span className="flex items-center gap-2.5 font-mono text-[13px] text-ink min-w-0">
+                    <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+                    <span className="truncate">{site.githubUser}/{p.name}</span>
                   </span>
-                )}
+                  {p.homepage && (
+                    <a
+                      href={p.homepage}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="text-xs font-mono text-amber hover:underline"
+                    >
+                      {lang === 'tr' ? 'Canlı Demo ↗' : 'Live Demo ↗'}
+                    </a>
+                  )}
+                </div>
+                <Readout p={p} />
+                <a href={p.href} target="_blank" rel="noreferrer" className="proj-open">
+                  {lang === 'tr' ? 'GitHub üzerinde aç' : 'Open on GitHub'}
+                  <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <path d="M7 17 17 7M8 7h9v9" />
+                  </svg>
+                  <span className="sr-only">(opens in a new tab)</span>
+                </a>
               </div>
-              <Readout p={p} />
-              <a href={p.href} target="_blank" rel="noreferrer" className="proj-open">
-                {lang === 'tr' ? 'GitHub üzerinde aç' : 'Open on GitHub'}
-                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                  <path d="M7 17 17 7M8 7h9v9" />
-                </svg>
-                <span className="sr-only">(opens in a new tab)</span>
-              </a>
             </div>
           </div>
-        </div>
+        )}
 
         <div className="proj-bar">
           <label className="proj-prompt">
@@ -418,7 +435,7 @@ export default function Projects() {
             {String(at + 1).padStart(2, '0')}
             <i>/{String(list.length).padStart(2, '0')}</i>
           </span>
-          {projects.length > 1 && (
+          {repos.length > 1 && (
             <span className="proj-switch" role="group" aria-label="Layout">
               <button type="button" aria-pressed={mode === 'shelf'} onClick={() => setMode('shelf')}>shelf</button>
               <button type="button" aria-pressed={mode === 'ls'} onClick={() => setMode('ls')}>ls</button>
@@ -448,16 +465,16 @@ export default function Projects() {
               <Star className="proj-played-star" />
               <span className="proj-played-n">
                 {String(played).padStart(2, '0')}
-                <i>/{String(projects.length).padStart(2, '0')}</i>
+                <i>/{String(repos.length).padStart(2, '0')}</i>
               </span>
-              <span className="proj-played-label">{cleared ? 'all cartridges cleared' : 'cartridges played'}</span>
+              <span className="proj-played-label">{cleared ? 'all repositories explored' : 'repositories explored'}</span>
               <span
                 className="proj-played-bar"
-                style={{ '--p': played / projects.length }}
+                style={{ '--p': repos.length ? played / repos.length : 0 }}
                 aria-hidden="true"
               />
             </div>
-            <div ref={lsRef} role="tablist" aria-label="Project list" className="proj-ls scroll-thin" data-thumbs={thumbs || undefined}>
+            <div ref={lsRef} role="tablist" aria-label="Project list" className="proj-ls scroll-thin">
               {list.map(cart)}
             </div>
           </>
@@ -482,7 +499,7 @@ export default function Projects() {
             </>
           ) : (
             <>
-              <kbd>←</kbd> <kbd>→</kbd> to swap cartridges
+              <kbd>←</kbd> <kbd>→</kbd> to swap projects
             </>
           )}
         </p>

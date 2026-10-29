@@ -7,8 +7,8 @@ import { TECH_COLORS } from '../../config/tech.js';
 import TechIcon from '../ui/TechIcon.jsx';
 import SectionHead from '../ui/SectionHead.jsx';
 import Terminal from './Terminal/Terminal.jsx';
-import { featured, arts } from '../../projects/index.js';
-import { slugOf } from '../../projects/slug.js';
+import { featured } from '../../projects/index.js';
+import { useGithubRepos } from '../../lib/github.js';
 import { LAB_ITEMS } from '../../config/lab-items.js';
 import { gitLog, stack } from '../../data/profile.js';
 import { site } from '../../config/site.js';
@@ -24,7 +24,8 @@ import HlArrow from '../ui/HlArrow.jsx';
 import Scramble from '../ui/Scramble.jsx';
 
 export function FeaturedProjects({ onNavigate }) {
-  const list = featured;
+  const { featured: githubFeatured } = useGithubRepos();
+  const list = githubFeatured && githubFeatured.length ? githubFeatured : featured;
   const [i, setI] = useState(0);
   const hoverT = useTimer();
   const scrollT = useTimer();
@@ -44,30 +45,60 @@ export function FeaturedProjects({ onNavigate }) {
             href={p.href}
             target="_blank"
             rel="noreferrer"
-            aria-label={`Open ${p.file}`}
+            aria-label={`Open ${p.name || p.file}`}
             onMouseMove={spotMove}
-            className="spot relative block h-[300px] rounded-[10px] overflow-hidden bg-panel border border-line"
+            className="spot relative block min-h-[300px] p-6 rounded-[12px] overflow-hidden bg-panel border border-line flex flex-col justify-between group transition-all duration-300 hover:border-amber/50"
           >
-            {list.map((q, n) => {
-              const Art = arts[slugOf(q)];
-              return (
-                Art && (
-                  <div
-                    key={q.file}
-                    aria-hidden="true"
-                    style={{ color: q.color }}
-                    className={`absolute inset-0 transition-[opacity,transform] duration-700 ease-out ${
-                      n === i ? 'opacity-100 scale-100' : 'opacity-0 scale-[0.94] [&_*]:[animation-play-state:paused]'
-                    }`}
-                  >
-                    <Suspense fallback={null}>
-                      <Art />
-                    </Suspense>
-                  </div>
-                )
-              );
-            })}
-            <span className="absolute bottom-3 left-4 font-mono text-[12px] text-dim">{p.file}</span>
+            <div className="flex items-center justify-between pb-3 border-b border-line/60">
+              <div className="flex items-center gap-2">
+                <span className="w-2.5 h-2.5 rounded-full bg-red-500/80" />
+                <span className="w-2.5 h-2.5 rounded-full bg-yellow-500/80" />
+                <span className="w-2.5 h-2.5 rounded-full bg-green-500/80" />
+                <span className="ml-2 font-mono text-xs text-dim">github.com/{site.githubUser}/{p.name || p.file}</span>
+              </div>
+              <span className="text-[11px] font-mono px-2 py-0.5 rounded border border-line text-dim">public</span>
+            </div>
+
+            <div className="py-4 my-auto">
+              <div className="flex items-center gap-2.5 mb-2">
+                <svg className="w-5 h-5 text-amber" viewBox="0 0 16 16" fill="currentColor">
+                  <path d="M2 2.5A2.5 2.5 0 0 1 4.5 0h8.75a.75.75 0 0 1 .75.75v12.5a.75.75 0 0 1-.75.75h-2.5a.75.75 0 0 1 0-1.5h1.75v-2h-8a1 1 0 0 0-.714 1.7.75.75 0 1 1-1.072 1.05A2.495 2.495 0 0 1 2 11.5Zm10.5-1h-8a1 1 0 0 0-1 1v6.708A2.486 2.486 0 0 1 4.5 9h8ZM5 12.25a.25.25 0 0 1 .25-.25h3.5a.25.25 0 0 1 .25.25v3.25a.25.25 0 0 1-.4.2l-1.45-1.087a.249.249 0 0 0-.3 0L5.4 15.7a.25.25 0 0 1-.4-.2Z" />
+                </svg>
+                <span className="font-mono text-lg font-bold text-ink group-hover:text-amber transition-colors">
+                  {p.name || p.file}
+                </span>
+              </div>
+              <p className="text-dim text-sm leading-relaxed font-sans line-clamp-3">
+                {lang === 'tr' && p.descTr ? p.descTr : p.desc}
+              </p>
+
+              <div className="mt-4 p-2.5 rounded bg-black/30 border border-line font-mono text-xs text-amber flex items-center justify-between">
+                <code>$ git clone {p.href}.git</code>
+                <span className="text-[11px] text-dim opacity-70 group-hover:opacity-100">open ↗</span>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-between pt-3 border-t border-line/60 font-mono text-xs">
+              <div className="flex items-center gap-4">
+                {p.language && (
+                  <span className="flex items-center gap-1.5 text-ink">
+                    <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: p.color }} />
+                    {p.language}
+                  </span>
+                )}
+                <span className="flex items-center gap-1 text-dim">
+                  ★ {p.stars}
+                </span>
+                {p.forks > 0 && (
+                  <span className="flex items-center gap-1 text-dim">
+                    ⑂ {p.forks}
+                  </span>
+                )}
+              </div>
+              <span className="text-amber font-mono text-xs flex items-center gap-1">
+                {lang === 'tr' ? 'GitHub’da Gör' : 'View on GitHub'} →
+              </span>
+            </div>
           </a>
 
           <ul className="m-0 p-0 list-none border-b border-line">

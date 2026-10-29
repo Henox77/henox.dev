@@ -1,2 +1,2 @@
-export const slugOfFile = (file) => file.replace(/\.[^.]+$/, '');
-export const slugOf = (project) => slugOfFile(project.file);
+export const slugOfFile = (file) => file;
+export const slugOf = (project) => project.name || project.file || '';
